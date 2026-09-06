@@ -94,7 +94,7 @@
   .watchlist-card textarea{min-height:55px}
 }
 </style>
-</head><body>
+<link rel="manifest" href="selection-manifest.json"><meta name="theme-color" content="#2864d7"></head><body>
 <div class="page-nav" style="display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 14px;">
   <a href="index.html" style="text-decoration:none;padding:8px 12px;border:1px solid #b8c7d9;border-radius:8px;font-weight:700;color:inherit;">
     DAILY AUKAAT CALCULATOR
@@ -594,4 +594,11 @@ calc();
 })();
 </script>
 
-</body></html>
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", function () {
+    navigator.serviceWorker.register("./selection-service-worker.js", {scope: "./"})
+      .catch(function (err) { console.log("Selection Desk service worker:", err); });
+  });
+}
+</script></body></html>

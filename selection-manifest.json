@@ -1,0 +1,25 @@
+{
+  "name": "ATTD Daily Trade Selection Desk",
+  "short_name": "ATTD Selection Desk",
+  "description": "ATTD daily trade selection, confluence and TradingView watchlist desk.",
+  "start_url": "./selection.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f5f7fb",
+  "theme_color": "#2864d7",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "./selection-icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "./selection-icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
