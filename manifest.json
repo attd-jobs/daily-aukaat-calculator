@@ -1,0 +1,14 @@
+{
+  "name": "DAILY AUKAAT CALCULATOR",
+  "short_name": "DAILY AUKAAT",
+  "description": "Income-based trading risk planning, position sizing and daily trading record.",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#f5f7fb",
+  "theme_color": "#17365d",
+  "orientation": "any",
+  "icons": [
+    {"src":"icon-192.png","sizes":"192x192","type":"image/png"},
+    {"src":"icon-512.png","sizes":"512x512","type":"image/png"}
+  ]
+}

@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DAILY AUKAAT CALCULATOR</title>
+<style>
+:root{
+  --blue:#2864d7; --navy:#17365d; --bg:#f5f7fb; --card:#fff;
+  --line:#d9e2f3; --text:#172033; --muted:#687386; --green:#16833b; --red:#c62828;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);font-family:Arial,Helvetica,sans-serif;color:var(--text)}
+.wrap{max-width:1450px;margin:22px auto;padding:0 16px}
+h1{margin:0;color:var(--navy);font-size:28px}
+.sub{color:var(--muted);margin:5px 0 20px}
+.section{margin:18px 0 0}
+.section-title{background:var(--blue);color:#fff;font-weight:700;font-size:17px;padding:10px 14px;border-radius:7px 7px 0 0}
+.grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;background:var(--card);padding:14px;border:1px solid var(--line);border-top:0}
+.field label{display:block;font-size:12px;font-weight:700;color:var(--muted);margin-bottom:5px}
+input,select{width:100%;height:38px;border:1px solid #cbd5e1;border-radius:6px;padding:7px 9px;font-size:14px;background:#fff}
+.calc{background:#f2f5fa;font-weight:700}
+.forecast .grid{grid-template-columns:repeat(4,1fr)}
+.value{height:38px;display:flex;align-items:center;justify-content:center;background:#f2f5fa;border:1px solid var(--line);border-radius:6px;font-weight:700}
+.green{color:var(--green)} .red{color:var(--red)}
+.table-wrap{overflow-x:auto;background:#fff;border:1px solid var(--line);border-top:0}
+table{width:100%;border-collapse:collapse;min-width:1120px}
+th{background:var(--navy);color:#fff;padding:10px 7px;font-size:12px;white-space:nowrap}
+td{padding:5px;border-bottom:1px solid var(--line);text-align:center}
+td input,td select{height:34px;font-size:13px}
+td:nth-child(2){min-width:120px} td:nth-child(5){min-width:105px}
+.auto{background:#f2f5fa;font-weight:700}
+.final{background:#e2f0d9!important;font-weight:700}
+.warn{background:#fff3cd!important}
+.score{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;background:#fff;padding:14px;border:1px solid var(--line);border-top:0}
+.score .item{display:flex;justify-content:space-between;gap:8px;align-items:center;border:1px solid var(--line);background:#f2f5fa;padding:9px 11px;border-radius:6px}
+.score .label{font-weight:700;color:var(--muted);font-size:13px}
+.score .num{font-weight:800}
+.actions{display:flex;gap:10px;margin:16px 0;flex-wrap:wrap}
+button{border:0;border-radius:6px;padding:10px 15px;font-weight:700;cursor:pointer}
+.primary{background:var(--blue);color:#fff}.secondary{background:#e8edf5;color:var(--navy)}.danger{background:#fbe4e4;color:var(--red)}
+.note{font-size:12px;color:var(--muted);padding:12px 0 30px}
+@media(max-width:900px){
+ .grid,.forecast .grid,.score{grid-template-columns:repeat(2,1fr)}
+ h1{font-size:23px}
+}
+@media(max-width:600px){
+ .grid,.forecast .grid,.score{grid-template-columns:1fr}
+ .wrap{padding:0 9px;margin:12px auto}
+}
+
+
+/* =========================================================
+   PRINT: A4 LANDSCAPE / PRINT-OPTIMIZED
+   Screen layout remains unchanged.
+   ========================================================= */
+@page{
+  size:A4 landscape;
+  margin:8mm;
+}
+@media print{
+  html,body{
+    width:100%!important;
+    background:#fff!important;
+  }
+  body{
+    -webkit-print-color-adjust:exact!important;
+    print-color-adjust:exact!important;
+  }
+  .wrap{
+    width:100%!important;
+    max-width:none!important;
+    margin:0!important;
+    padding:0!important;
+  }
+  h1{font-size:22px!important;margin:0!important}
+  .sub{font-size:10px!important;margin:4px 0 7px!important}
+  .print-record{font-size:11px!important;margin:-2px 0 7px!important}
+  .section{margin:7px 0 0!important}
+  .section-title{font-size:11px!important;padding:5px 8px!important}
+  .grid{padding:6px!important;gap:5px!important}
+  .field label{font-size:8px!important;margin-bottom:2px!important}
+  input,select,.value{
+    height:25px!important;
+    padding:3px 5px!important;
+    font-size:9px!important;
+  }
+  .table-wrap{overflow:visible!important}
+  table{
+    width:100%!important;
+    min-width:0!important;
+    table-layout:auto!important;
+  }
+  th{font-size:8px!important;padding:5px 3px!important}
+  td{font-size:8px!important;padding:2px!important}
+  td input,td select{
+    height:23px!important;
+    font-size:8px!important;
+    padding:2px 3px!important;
+  }
+  .score{padding:6px!important;gap:5px!important}
+  .score .item{padding:5px 7px!important}
+  .score .label,.score .num{font-size:8px!important}
+  .actions{display:none!important}
+  .note{font-size:7px!important;padding:5px 0 0!important}
+  .section-title,
+  th{
+    print-color-adjust:exact!important;
+    -webkit-print-color-adjust:exact!important;
+  }
+}
+
+@media print{
+ .print-record{display:block!important}
+}
+@media print{
+ body{background:#fff}.wrap{max-width:none;margin:0}.actions{display:none}
+ .section-title{print-color-adjust:exact;-webkit-print-color-adjust:exact}
+ th{print-color-adjust:exact;-webkit-print-color-adjust:exact}
+}
+
+/* =========================================================
+   MOBILE / iPHONE LAYOUT
+   ========================================================= */
+@media screen and (max-width:600px){
+  html,body{
+    width:100%;
+    min-width:0;
+    overflow-x:hidden;
+    -webkit-text-size-adjust:100%;
+  }
+  body{
+    font-size:14px;
+  }
+  .wrap{
+    width:100%;
+    max-width:none;
+    margin:0 auto;
+    padding:12px 9px 24px;
+  }
+  h1{
+    font-size:22px;
+    line-height:1.15;
+  }
+  .sub{
+    font-size:11px;
+    line-height:1.4;
+    margin:5px 0 14px;
+  }
+  .section{
+    margin:12px 0 0;
+  }
+  .section-title{
+    font-size:14px;
+    padding:9px 10px;
+  }
+  .grid,
+  .forecast .grid,
+  .score{
+    grid-template-columns:1fr!important;
+    gap:8px;
+    padding:10px;
+  }
+  .field label{
+    font-size:11px;
+    margin-bottom:4px;
+  }
+  input,select{
+    width:100%;
+    height:42px;
+    font-size:16px; /* prevents iOS Safari zoom on focus */
+    padding:8px 10px;
+  }
+  .value{
+    height:42px;
+    font-size:14px;
+  }
+  .table-wrap{
+    width:100%;
+    overflow-x:auto;
+    -webkit-overflow-scrolling:touch;
+  }
+  table{
+    min-width:1120px;
+  }
+  th{
+    font-size:11px;
+    padding:9px 6px;
+  }
+  td{
+    padding:5px;
+  }
+  td input,td select{
+    height:40px;
+    font-size:16px;
+  }
+  .score .item{
+    min-height:40px;
+    padding:9px 10px;
+  }
+  .score .label{
+    font-size:12px;
+  }
+  .score .num{
+    font-size:14px;
+  }
+  .actions{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:8px;
+    margin:12px 0;
+  }
+  button{
+    width:100%;
+    min-height:44px;
+    font-size:14px;
+  }
+  .note{
+    font-size:10px;
+    line-height:1.45;
+    padding:8px 0 20px;
+  }
+}
+
+</style>
+
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#17365d">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="DAILY AUKAAT">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="apple-touch-icon" href="icon-192.png">
+
+</head>
+<body>
+<div class="wrap">
+  <h1>DAILY AUKAAT CALCULATOR</h1>
+  <div class="sub">by Adarsh Technical Trading Desk (ATTD) • Income-based risk planning • Position sizing • Planned Risk : Reward is user-defined (default 1 : 5)</div>
+  <div class="print-record" id="printRecord" style="display:none;font-size:13px;font-weight:700;color:#17365d;margin:-8px 0 14px;">
+    Record: <span id="printRecordName">—</span> &nbsp; | &nbsp; Date: <span id="printRecordDate">—</span>
+  </div>
+
+  <div class="section">
+    <div class="section-title">1 | DAILY PLAN</div>
+    <div class="grid">
+      <div class="field"><label>Date (DD/MM/YYYY)</label><input id="date" type="text" inputmode="numeric" placeholder="DD/MM/YYYY" maxlength="10"></div>
+      <div class="field"><label>Trader / Record Name</label><input id="recordName" type="text" placeholder="Enter name"></div>
+      <div class="field"><label>Currency</label>
+        <select id="currency">
+          <option value="INR" selected>₹ INR — Indian Rupee</option>
+          <option value="USD">$ USD — US Dollar</option>
+          <option value="EUR">€ EUR — Euro</option>
+          <option value="GBP">£ GBP — British Pound</option>
+          <option value="JPY">¥ JPY — Japanese Yen</option>
+          <option value="AUD">$ AUD — Australian Dollar</option>
+          <option value="CAD">$ CAD — Canadian Dollar</option>
+          <option value="SGD">$ SGD — Singapore Dollar</option>
+          <option value="AED">د.إ AED — UAE Dirham</option>
+        </select>
+      </div>
+      <div class="field"><label id="salaryLabel">Monthly Salary / Income (₹)</label><input id="salary" type="number" value="100000" min="0" step="1000"></div>
+      <div class="field"><label>Trading Days / Month</label><input id="days" type="number" value="20" min="1" step="1"></div>
+      <div class="field"><label>Max Trades / Day</label><input id="maxTrades" type="number" value="4" min="1" max="50" step="1"></div>
+      <div class="field"><label>Risk : Reward</label><input id="rr" type="number" value="5" min="0.1" step="0.1"></div>
+    </div>
+  </div>
+
+  <div class="section forecast">
+    <div class="section-title">2 | RISK–REWARD FORECAST</div>
+    <div class="grid">
+      <div class="field"><label>Salary / Trading Day</label><div class="value" id="salaryDay">₹0.00</div></div>
+      <div class="field"><label>Max Risk / Day • 25%</label><div class="value red" id="dailyRisk">₹0.00</div></div>
+      <div class="field"><label>Risk / Trade • 1R</label><div class="value red" id="riskTrade">₹0.00</div></div>
+      <div class="field"><label>Target / Trade</label><div class="value green" id="targetTrade">₹0.00</div></div>
+      <div class="field"><label>Max Loss / Trade</label><div class="value red" id="maxLossTrade">-₹0.00</div></div>
+      <div class="field"><label>Max Loss / Day</label><div class="value red" id="maxLossDay">-₹0.00</div></div>
+      <div class="field"><label>RR Target / Day</label><div class="value green" id="targetDay">₹0.00</div></div>
+      <div class="field"><label>Trades Allowed</label><div class="value" id="tradesAllowed">0</div></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">3 | TRADES TODAY</div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr>
+          <th>#</th><th>Stock / Index</th><th>Side</th><th>Capital Deployed</th>
+          <th>Capital Qty</th><th>Risk Qty</th><th>Final Qty</th>
+          <th>Entry</th><th>SL</th><th>TP (RR)</th><th>Result</th>
+          <th>Exit Price</th><th>P&amp;L</th><th>R</th>
+        </tr></thead>
+        <tbody id="trades"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">4 | TODAY'S SCORECARD</div>
+    <div class="score">
+      <div class="item"><span class="label">Trades Completed</span><span class="num" id="completed">0</span></div>
+      <div class="item"><span class="label">Wins</span><span class="num" id="wins">0</span></div>
+      <div class="item"><span class="label">Losses</span><span class="num" id="losses">0</span></div>
+      <div class="item"><span class="label">Win Rate</span><span class="num" id="winRate">0.0%</span></div>
+      <div class="item"><span class="label">Today P&amp;L</span><span class="num" id="todayPnl">₹0.00</span></div>
+      <div class="item"><span class="label">Today R</span><span class="num" id="todayR">0.00R</span></div>
+      <div class="item"><span class="label">Risk Used</span><span class="num" id="riskUsed">₹0.00</span></div>
+      <div class="item"><span class="label">Risk Remaining</span><span class="num" id="riskRemaining">₹0.00</span></div>
+      <div class="item"><span class="label">Daily Risk Limit</span><span class="num" id="dailyLimit">₹0.00</span></div>
+      <div class="item"><span class="label">Max Risk / Trade</span><span class="num" id="maxRiskTrade">₹0.00</span></div>
+      <div class="item"><span class="label">RR Target / Trade</span><span class="num" id="fourR">₹0.00</span></div>
+      <div class="item"><span class="label">Trades Allowed</span><span class="num" id="scoreTrades">0</span></div>
+    </div>
+  </div>
+
+  <div class="actions">
+    <button class="primary" onclick="window.print()">Print / Save PDF</button>
+    <button class="secondary" onclick="saveData()">Save Today</button>
+    <button class="secondary" onclick="loadData()">Load Saved</button>
+    <button class="danger" onclick="resetAll()">Reset</button>
+  </div>
+
+  <div class="note">
+    <b>Position sizing:</b> Capital Qty = Capital ÷ Entry. Risk Qty = Max Risk / Trade ÷ |Entry − SL|.
+    Final Qty = Capital Qty normally; when Result is <b>SL</b>, Final Qty switches to Risk Qty.
+    TP is automatically calculated using the selected Risk : Reward ratio. Manual positive exits count as Wins and negative exits as Losses.
+    Currency changes the display currency only; it does not perform FX conversion.
+  </div>
+</div>
+
+<script>
+const currencyMap = {
+  INR:{symbol:"₹", locale:"en-IN"},
+  USD:{symbol:"$", locale:"en-US"},
+  EUR:{symbol:"€", locale:"de-DE"},
+  GBP:{symbol:"£", locale:"en-GB"},
+  JPY:{symbol:"¥", locale:"ja-JP"},
+  AUD:{symbol:"$", locale:"en-AU"},
+  CAD:{symbol:"$", locale:"en-CA"},
+  SGD:{symbol:"$", locale:"en-SG"},
+  AED:{symbol:"د.إ", locale:"en-AE"}
+};
+const currencyCode = () => document.getElementById("currency").value;
+const money = n => {
+  const c = currencyMap[currencyCode()] || currencyMap.INR;
+  return c.symbol + (Number(n)||0).toLocaleString(c.locale,{minimumFractionDigits:2,maximumFractionDigits:2});
+};
+const num = n => (Number(n)||0).toLocaleString("en-IN",{maximumFractionDigits:0});
+const val = id => document.getElementById(id).value;
+const nval = id => Number(val(id)) || 0;
+
+function formatToday(){
+  const d=new Date();
+  return String(d.getDate()).padStart(2,"0")+"/"+String(d.getMonth()+1).padStart(2,"0")+"/"+d.getFullYear();
+}
+document.getElementById("date").value=formatToday();
+
+function normalizeDateInput(el){
+  let v=el.value.replace(/\D/g,"").slice(0,8);
+  if(v.length>4) v=v.slice(0,2)+"/"+v.slice(2,4)+"/"+v.slice(4);
+  else if(v.length>2) v=v.slice(0,2)+"/"+v.slice(2);
+  el.value=v;
+}
+
+const tbody=document.getElementById("trades");
+
+function buildTradeRows(){
+  const requested=Math.max(1,Math.min(50,Math.floor(nval("maxTrades")||4)));
+  tbody.innerHTML="";
+  for(let i=1;i<=requested;i++){
+    const tr=document.createElement("tr");
+    tr.innerHTML=`
+      <td>${i}</td>
+      <td><input id="stock${i}" type="text" placeholder="Stock / Index"></td>
+      <td><select id="side${i}"><option value=""></option><option>BUY</option><option>SELL</option></select></td>
+      <td><input id="capital${i}" type="number" min="0" step="100"></td>
+      <td><div class="value auto" id="capQty${i}">—</div></td>
+      <td><div class="value auto" id="riskQty${i}">—</div></td>
+      <td><div class="value final" id="finalQty${i}">—</div></td>
+      <td><input id="entry${i}" type="number" min="0" step="0.01"></td>
+      <td><input id="sl${i}" type="number" min="0" step="0.01"></td>
+      <td><div class="value auto" id="tp${i}">—</div></td>
+      <td><select id="result${i}"><option>Open</option><option>SL</option><option>TP</option><option>Manual</option></select></td>
+      <td><input id="exit${i}" type="number" min="0" step="0.01"></td>
+      <td><div class="value auto" id="pnl${i}">—</div></td>
+      <td><div class="value auto" id="r${i}">—</div></td>`;
+    tbody.appendChild(tr);
+  }
+  document.querySelectorAll("#trades input,#trades select").forEach(x=>{
+    x.addEventListener("input",calc);
+    x.addEventListener("change",calc);
+  });
+}
+
+document.getElementById("maxTrades").addEventListener("input",()=>{
+  buildTradeRows();
+  calc();
+});
+document.getElementById("maxTrades").addEventListener("change",()=>{
+  buildTradeRows();
+  calc();
+});
+document.getElementById("rr").addEventListener("input",calc);
+document.getElementById("rr").addEventListener("change",calc);
+document.querySelectorAll("input,select").forEach(x=>x.addEventListener("input",calc));
+document.querySelectorAll("input,select").forEach(x=>x.addEventListener("change",calc));
+document.querySelectorAll("input,select").forEach(x=>x.addEventListener("change",calc));
+document.getElementById("date").addEventListener("input",function(){normalizeDateInput(this)});
+document.getElementById("currency").addEventListener("change",calc);
+
+function calc(){
+  document.getElementById("printRecordName").textContent = document.getElementById("recordName").value.trim() || "—";
+  document.getElementById("printRecordDate").textContent = document.getElementById("date").value || "—";
+  const c = currencyMap[currencyCode()] || currencyMap.INR;
+  document.getElementById("salaryLabel").textContent = "Monthly Salary / Income (" + c.symbol + ")";
+  const salary=nval("salary"), days=nval("days"), maxTrades=Math.max(1,Math.min(50,Math.floor(nval("maxTrades")||4)));
+  const rr=Math.max(0.1,nval("rr")||5);
+  const salaryDay=days?salary/days:0, dailyRisk=salaryDay*.25;
+  const riskTrade=maxTrades?dailyRisk/maxTrades:0, targetTrade=riskTrade*rr;
+
+  document.getElementById("salaryDay").textContent=money(salaryDay);
+  document.getElementById("dailyRisk").textContent=money(dailyRisk);
+  document.getElementById("riskTrade").textContent=money(riskTrade);
+  document.getElementById("targetTrade").textContent=money(targetTrade);
+  document.getElementById("maxLossTrade").textContent="-"+money(riskTrade);
+  document.getElementById("maxLossDay").textContent="-"+money(dailyRisk);
+  document.getElementById("targetDay").textContent=money(targetTrade*maxTrades);
+  document.getElementById("tradesAllowed").textContent=num(maxTrades);
+
+  let completed=0,wins=0,losses=0,totalPnl=0,totalR=0,riskUsed=0;
+
+  for(let i=1;i<=maxTrades;i++){
+    const capital=nval("capital"+i), entry=nval("entry"+i), sl=nval("sl"+i);
+    const side=val("side"+i), result=val("result"+i), exit=nval("exit"+i);
+    const capQty=(capital>0 && entry>0)?Math.floor(capital/entry):0;
+    const riskQty=(entry>0 && sl>0 && entry!==sl)?Math.floor(riskTrade/Math.abs(entry-sl)):0;
+
+    // Actual trade quantity: normally the quantity bought with deployed capital.
+    // If the recorded result is SL, risk-controlled quantity is shown.
+    const finalQty = capQty ? (result==="SL" && riskQty ? riskQty : capQty) : 0;
+
+    let tp=0;
+    if(entry>0 && sl>0 && side){
+      tp=side==="BUY" ? entry+rr*Math.abs(entry-sl) : entry-rr*Math.abs(entry-sl);
+    }
+
+    let pnl=null, R=null;
+    if(result==="SL" && entry>0 && sl>0 && finalQty){
+      pnl=-Math.abs(entry-sl)*finalQty;
+    }else if(result==="TP" && entry>0 && tp>0 && finalQty){
+      pnl=(side==="BUY" ? tp-entry : entry-tp)*finalQty;
+    }else if(result==="Manual" && entry>0 && exit>0 && finalQty){
+      pnl=(side==="BUY" ? exit-entry : entry-exit)*finalQty;
+    }
+
+    if(pnl!==null){
+      totalPnl+=pnl; completed++;
+      if(pnl>0) wins++;
+      if(pnl<0){losses++;riskUsed+=-pnl;}
+      if(sl>0 && finalQty && entry!==sl) R=pnl/(Math.abs(entry-sl)*finalQty);
+      if(R!==null) totalR+=R;
+    }
+
+    const el=id=>document.getElementById(id+i);
+    el("capQty").textContent=capQty?num(capQty):"—";
+    el("riskQty").textContent=riskQty?num(riskQty):"—";
+    el("finalQty").textContent=finalQty?num(finalQty):"—";
+    el("tp").textContent=tp?tp.toLocaleString("en-IN",{minimumFractionDigits:2,maximumFractionDigits:2}):"—";
+    el("pnl").textContent=pnl===null?"—":money(pnl);
+    el("pnl").className="value auto "+(pnl>0?"green":pnl<0?"red":"");
+    el("r").textContent=R===null?"—":R.toFixed(2)+"R";
+  }
+
+  const wr=completed?wins/completed:0;
+  document.getElementById("completed").textContent=completed;
+  document.getElementById("wins").textContent=wins;
+  document.getElementById("losses").textContent=losses;
+  document.getElementById("winRate").textContent=(wr*100).toFixed(1)+"%";
+  document.getElementById("todayPnl").textContent=money(totalPnl);
+  document.getElementById("todayR").textContent=totalR.toFixed(2)+"R";
+  document.getElementById("riskUsed").textContent=money(riskUsed);
+  document.getElementById("riskRemaining").textContent=money(Math.max(0,dailyRisk-riskUsed));
+  document.getElementById("dailyLimit").textContent=money(dailyRisk);
+  document.getElementById("maxRiskTrade").textContent=money(riskTrade);
+  document.getElementById("fourR").textContent=money(targetTrade);
+  document.getElementById("scoreTrades").textContent=num(maxTrades);
+}
+function saveData(){
+  const ids=["date","recordName","currency","salary","days","maxTrades","rr"];
+  const count=Math.max(1,Math.min(50,Math.floor(nval("maxTrades")||4)));
+  for(let i=1;i<=count;i++) ids.push("stock"+i,"side"+i,"capital"+i,"entry"+i,"sl"+i,"result"+i,"exit"+i);
+  const data={}; ids.forEach(id=>{const el=document.getElementById(id); if(el) data[id]=el.value;});
+  localStorage.setItem("ATTD_Trading_Calculator",JSON.stringify(data));
+  alert("Today's DAILY AUKAAT data saved in this browser.");
+}
+function loadData(){
+  const raw=localStorage.getItem("ATTD_Trading_Calculator");
+  if(!raw){alert("No saved data found in this browser.");return}
+  const data=JSON.parse(raw);
+  Object.keys(data).forEach(id=>{if(id==="maxTrades") return; const el=document.getElementById(id); if(el) el.value=data[id]});
+  if(data.maxTrades) document.getElementById("maxTrades").value=data.maxTrades;
+  buildTradeRows();
+  Object.keys(data).forEach(id=>{const el=document.getElementById(id); if(el) el.value=data[id]});
+  calc();
+}
+function resetAll(){
+  if(!confirm("Reset today's calculator?"))return;
+  document.querySelectorAll("input").forEach(x=>x.value="");
+  document.getElementById("recordName").value="";
+  document.getElementById("date").value=formatToday();
+  document.getElementById("currency").value="INR";
+  document.getElementById("salary").value=100000;
+  document.getElementById("days").value=20;
+  document.getElementById("maxTrades").value=4;
+  document.getElementById("rr").value=5;
+  buildTradeRows();
+  document.querySelectorAll("#trades select").forEach((x)=>x.selectedIndex=0);
+  calc();
+}
+function initializeCalculator(){
+  try{
+    buildTradeRows();
+    calc();
+  }catch(err){
+    console.error("DAILY AUKAAT initialization error:", err);
+  }
+}
+if(document.readyState === "loading"){
+  document.addEventListener("DOMContentLoaded", initializeCalculator);
+}else{
+  initializeCalculator();
+}
+</script>
+
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", function () {
+    navigator.serviceWorker.register("./service-worker.js").catch(function (err) {
+      console.log("PWA service worker:", err);
+    });
+  });
+}
+</script>
+
+</body>
+</html>
