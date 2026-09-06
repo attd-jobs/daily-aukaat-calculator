@@ -1,0 +1,597 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ATTD Daily Trade Selection Desk</title><style>
+*{box-sizing:border-box}body{margin:0;background:#f5f7fb;font-family:Arial;color:#172033}.wrap{max-width:1450px;margin:20px auto;padding:0 14px}h1{color:#17365d;margin:0}.sub{color:#687386;margin:5px 0 18px}.title{background:#2864d7;color:white;padding:10px 14px;font-weight:bold;border-radius:7px 7px 0 0}.box{background:white;border:1px solid #d9e2f3;padding:14px}.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.sel{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.card{border:1px solid #d9e2f3;border-radius:6px;overflow:hidden}.head{background:#eef3fb;padding:8px;font-weight:bold;color:#17365d;display:flex;justify-content:space-between}.head small{color:#687386}textarea,input,select{width:100%;border:1px solid #cbd5e1;border-radius:6px;padding:8px;font:inherit}input,select{height:38px}textarea{height:80px;border:0;border-top:1px solid #d9e2f3;border-radius:0}.results{margin-top:16px}.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;padding:10px;background:#fff;border:1px solid #d9e2f3;border-top:0}.metric{text-align:center;background:#f2f5fa;border:1px solid #d9e2f3;padding:8px}.metric b{display:block;font-size:20px;color:#17365d}.table{overflow:auto;background:#fff;border:1px solid #d9e2f3;border-top:0}table{width:100%;border-collapse:collapse;min-width:850px}th{background:#17365d;color:white;padding:9px}td{padding:8px;border-bottom:1px solid #d9e2f3;text-align:center}td:nth-child(2){text-align:left;font-weight:bold}.badge{padding:5px 9px;border-radius:20px;font-weight:bold;font-size:11px}.superhot{background:#fbe4e4;color:#b71c1c}.hot{background:#fff0d8;color:#a85d00}.watch{background:#e8f0ff;color:#2859a8}.chip{display:inline-block;background:#eef3fb;padding:3px 6px;margin:2px;border-radius:4px;font-size:10px}.actions{margin:14px 0;display:flex;gap:8px}button{border:0;border-radius:6px;padding:10px 14px;font-weight:bold}.primary{background:#2864d7;color:white}.secondary{background:#e8edf5;color:#17365d}.danger{background:#fbe4e4;color:#c62828}.note{color:#687386;font-size:12px;line-height:1.5}@media(max-width:900px){.grid,.sel,.metrics{grid-template-columns:repeat(2,1fr)}}@media(max-width:600px){.grid,.sel,.metrics{grid-template-columns:1fr}.wrap{margin:10px auto;padding:0 9px}.actions{display:grid;grid-template-columns:1fr 1fr}input,select,textarea{font-size:16px}textarea{height:100px}}@page{size:A4 landscape;margin:8mm}@media print{.actions{display:none}.wrap{max-width:none;margin:0}.sel{grid-template-columns:repeat(3,1fr)}textarea{height:52px}.title{padding:6px}.box{padding:7px}}
+
+.group-title{
+  margin:4px 0 8px;
+  padding:9px 11px;
+  border-radius:6px;
+  font-size:12px;
+  font-weight:800;
+  letter-spacing:.2px;
+}
+.group-title span{float:right;font-size:10px;font-weight:700;opacity:.8}
+.primary-group{background:#e8f0ff;color:#17365d}
+.secondary-group{background:#fff0d8;color:#8a5600;margin-top:14px}
+.open-group{background:#e7f4eb;color:#176b36;margin-top:14px}
+.primary-chip{background:#e8f0ff;color:#17365d}
+.secondary-chip{background:#fff0d8;color:#8a5600}
+.open-chip{background:#e7f4eb;color:#176b36}
+.primary-confirmed{background:#e7f4eb;color:#176b36}
+.primary{background:#e8f0ff;color:#17365d}
+.secondary-only{background:#f0f2f5;color:#687386}
+
+</style>
+
+
+
+<style>
+.sel-card .head small{display:none}
+.entry-wrap{position:relative}
+.suggestions{
+  display:none;position:absolute;z-index:30;left:8px;right:8px;top:calc(100% - 2px);
+  background:#fff;border:1px solid #cbd5e1;border-radius:0 0 7px 7px;
+  box-shadow:0 5px 16px rgba(23,32,51,.12);overflow:hidden;flex-wrap:wrap;
+}
+.suggestions button{
+  background:#fff;color:#17365d;border:0;border-right:1px solid #e5e7eb;
+  border-bottom:1px solid #e5e7eb;border-radius:0;padding:8px 10px;
+  cursor:pointer;font-size:13px;
+}
+.suggestions button:hover{background:#eef3fb}
+.results .metrics{grid-template-columns:repeat(4,1fr)}
+@media(max-width:600px){.results .metrics{grid-template-columns:repeat(2,1fr)}}
+@media print{
+  .suggestions{display:none!important}
+}
+</style>
+
+<style>
+.suggestions{
+  display:none;position:absolute;z-index:30;left:8px;right:8px;top:calc(100% - 2px);
+  background:#fff;border:1px solid #cbd5e1;border-radius:0 0 7px 7px;
+  box-shadow:0 5px 16px rgba(23,32,51,.12);overflow:hidden;flex-wrap:wrap;
+}
+.suggestions button{
+  background:#fff;color:#17365d;border:0;border-right:1px solid #e5e7eb;
+  border-bottom:1px solid #e5e7eb;border-radius:0;padding:8px 10px;
+  cursor:pointer;font-size:13px;
+}
+.suggestions button:hover{background:#eef3fb}
+.entry-wrap{position:relative}
+.typo-warning{font-size:10px;margin-top:3px;color:#a05a00}
+@media print{.suggestions{display:none!important}}
+</style>
+
+<style>
+</style>
+
+<style>
+.compliment-helper{margin-top:8px;padding:8px 0 2px}
+.compliment-label{font-size:11px;font-weight:800;letter-spacing:.04em;opacity:.72;margin-bottom:6px}
+.compliment-types{display:flex;flex-wrap:wrap;gap:5px}
+.compliment-types button{padding:5px 10px;border:1px solid #cbd5e1;border-radius:7px;background:#fff;color:#17365d;font-size:11px;cursor:pointer}
+.compliment-types button.active{background:#17365d;color:#fff;border-color:#17365d}
+</style>
+
+<style>
+.compliment-types button.active::after{content:" ✓"}
+.compliment-types button{user-select:none}
+</style>
+
+<style>
+.watchlist-card{break-inside:avoid}
+.watchlist-sub{font-size:12px;opacity:.72;margin:-6px 0 12px}
+.watchlist-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.watchlist-heading{font-size:12px;font-weight:800;margin-bottom:5px;letter-spacing:.03em}
+.watchlist-card textarea{width:100%;min-height:72px;box-sizing:border-box;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:13px;line-height:1.45}
+.watchlist-actions{display:flex;flex-wrap:wrap;gap:7px;margin-top:10px}
+.watchlist-actions button{padding:8px 12px;border-radius:8px;border:1px solid #cbd5e1;background:#fff;color:#17365d;font-weight:700;font-size:11px;cursor:pointer}
+.watchlist-actions button:first-child{background:#17365d;color:#fff;border-color:#17365d}
+.copy-msg{font-size:11px;font-weight:700;margin-top:7px;min-height:15px}
+@media(max-width:600px){.watchlist-grid{grid-template-columns:1fr}}
+@media print{
+  .watchlist-actions,.copy-msg{display:none}
+  .watchlist-card textarea{min-height:55px}
+}
+</style>
+</head><body>
+<div class="page-nav" style="display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 14px;">
+  <a href="index.html" style="text-decoration:none;padding:8px 12px;border:1px solid #b8c7d9;border-radius:8px;font-weight:700;color:inherit;">
+    DAILY AUKAAT CALCULATOR
+  </a>
+  <span style="padding:8px 12px;border:1px solid #1d4f91;border-radius:8px;font-weight:700;">
+    TRADE SELECTION DESK
+  </span>
+</div>
+
+
+<div class="wrap">
+<h1>ATTD DAILY TRADE SELECTION DESK</h1><div class="sub">Adarsh Technical Trading Desk (ATTD) • Select → Confirm → Trade</div>
+<div class="title">1 | DAILY RECORD</div>
+<div class="box grid">
+  <div><label>Date</label><input id="date"></div>
+  <div><label>Trader / Record Name</label><input id="name" placeholder="Enter name"></div>
+  <div><label>Market</label><select id="market"><option>NSE</option><option>BSE</option><option>Both</option></select></div>
+  
+</div>
+<div style="margin-top:16px"><div class="title">2 | DAILY SELECTIONS</div><div class="box" style="display:block" id="selectionArea">
+  <div class="group-title primary-group">PRIMARY SELECTIONS <span>MAIN TRADE UNIVERSE — ONLY THESE STOCKS ARE TRADEABLE</span></div>
+  <div class="sel" id="primarySels"></div>
+  <div class="group-title secondary-group">SECONDARY SELECTIONS <span>CONFIRMATION — HELPS IDENTIFY WHICH PRIMARY STOCKS ARE HOT</span></div>
+  <div class="sel" id="secondarySels"></div>
+  <div class="group-title open-group">AFTER MARKET OPEN <span>LIVE CONFIRMATION — Sectors + OI-Spurts</span></div>
+  <div class="sel" id="openSels"></div>
+</div></div>
+<div class="results"><div class="title">3 | SELECTION MATRIX</div><div class="metrics"><div class="metric"><b id="all">0</b>Unique Stocks</div><div class="metric"><b id="sh">0</b>SuperHot</div><div class="metric"><b id="hh">0</b>Hot</div><div class="metric"><b id="ww">0</b>Watch</div></div><div class="table"><table><thead><tr><th>Stock / Index</th><th>Primary</th><th>Secondary</th><th>After Open</th><th>Status</th></tr></thead><tbody id="rows"><tr><td colspan="5">Your selected stocks will appear here automatically.</td></tr></tbody></table></div></div>
+<div class="actions"><button class="primary" onclick="print()">Print / Save PDF</button><button class="secondary" onclick="save()">Save Today</button><button class="secondary" onclick="load()">Load Saved</button><button class="danger" onclick="reset()">Reset</button></div>
+
+<section class="card watchlist-card" style="margin-top:16px;">
+  <div class="title">4 | WATCHLIST</div>
+  <div class="watchlist-sub">HOT &amp; SUPERHOT stocks only — ready to copy into your TradingView watchlist.</div>
+
+  <div class="watchlist-grid">
+    <div>
+      <div class="watchlist-heading super">🔥 SUPERHOT</div>
+      <textarea id="superHotWatch" readonly placeholder="SuperHot stocks will appear here..."></textarea>
+    </div>
+    <div>
+      <div class="watchlist-heading hot">🔥 HOT</div>
+      <textarea id="hotWatch" readonly placeholder="Hot stocks will appear here..."></textarea>
+    </div>
+  </div>
+
+  <div class="watchlist-actions">
+    <button type="button" id="copyWatchlist">COPY ALL TO TRADINGVIEW</button>
+    <button type="button" id="copySuperHot">COPY SUPERHOT</button>
+    <button type="button" id="copyHot">COPY HOT</button>
+  </div>
+
+  <div id="copyMsg" class="copy-msg"></div>
+</section>
+
+<div class="note"><b>Trade rule:</b> Only Primary selections are tradeable. Secondary and After-Open selections are confirmation layers.</div>
+</div><script>
+const PRIMARY=["CTC","S9","TC","S7","S8","Cluster"];
+const SECONDARY=["Results","News","Pre-Market","BB Reject"];
+const OPEN=["Sectors","OI-Spurts"];
+const ALL_GROUPS=[...PRIMARY,...SECONDARY,...OPEN];
+const $=id=>document.getElementById(id);
+
+function today(){
+  const d=new Date();
+  return String(d.getDate()).padStart(2,"0")+"/"+String(d.getMonth()+1).padStart(2,"0")+"/"+d.getFullYear();
+}
+if($("date")) $("date").value=today();
+
+/*
+  V10 philosophy:
+  - No NSE master list.
+  - No universe restrictions.
+  - Trader screens in TradingView and enters whatever symbols were selected.
+  - Symbols are normalized to CAPITALS.
+  - Suggestions come only from stocks already entered in the current desk.
+  - Repeated entry of AngelOne/ANGELONE is normalized to the same internal symbol.
+*/
+
+function norm(s){
+  return (s||"").toUpperCase().replace(/[^A-Z0-9&-]/g,"").trim();
+}
+function listStocks(value){
+  return (value||"").split(/[\s,;\n]+/).map(norm).filter(Boolean);
+}
+function allEnteredSymbols(){
+  const set=new Set();
+  ALL_GROUPS.forEach(n=>{
+    if($("s_"+n)) listStocks($("s_"+n).value).forEach(x=>set.add(x));
+  });
+  return [...set].sort();
+}
+function currentToken(value){
+  const parts=value.split(/[,;\n]/);
+  return parts[parts.length-1].trim();
+}
+function replaceCurrentToken(text, token){
+  const parts=text.split(/([,;\n])/);
+  let i=parts.length-1;
+  while(i>=0 && !/[,\n;]/.test(parts[i])) i--;
+  const prefix=parts.slice(0,i+1).join("");
+  return prefix + token + ", ";
+}
+function showSuggestions(n){
+  const ta=$("s_"+n), box=$("sg_"+n);
+  const raw=currentToken(ta.value);
+  const q=norm(raw);
+  box.innerHTML="";
+  if(!q){box.style.display="none";return;}
+
+  const candidates=allEnteredSymbols().filter(x=>x!==q && x.startsWith(q)).slice(0,8);
+  if(!candidates.length){box.style.display="none";return;}
+
+  box.innerHTML=candidates.map(x=>
+    `<button type="button" data-symbol="${x}">${x}</button>`
+  ).join("");
+  box.style.display="flex";
+
+  box.querySelectorAll("button").forEach(btn=>{
+    btn.onclick=()=>{
+      ta.value=replaceCurrentToken(ta.value,btn.dataset.symbol);
+      box.style.display="none";
+      ta.focus();
+      calc();
+    };
+  });
+}
+
+function normalizeAll(){
+  ALL_GROUPS.forEach(n=>{
+    const ta=$("s_"+n);
+    if(ta) ta.value=listStocks(ta.value).join(", ");
+  });
+}
+
+/* Create the three selection groups. */
+function renderGroup(list,target){
+  const host=$(target);
+  if(!host)return;
+  host.innerHTML="";
+  list.forEach(n=>{
+    host.insertAdjacentHTML("beforeend",`
+      <div class="card sel-card">
+        <div class="head">${n}</div>
+        <div class="entry-wrap">
+          <textarea id="s_${n}" autocomplete="off" spellcheck="false"
+            placeholder="Type stock names from your TradingView screen..."></textarea>
+          <div class="suggestions" id="sg_${n}"></div>
+        </div>
+      </div>`);
+  });
+}
+renderGroup(PRIMARY,"primarySels");
+renderGroup(SECONDARY,"secondarySels");
+
+renderGroup(OPEN,"openSels");
+
+
+/* Compliments are not selections themselves.
+   They are optional confluence tags attached to TC/S8:
+   TC -> Hammer
+   S8 -> ATH, ATL, SS, SR
+   Adding a valid compliment upgrades the stock to SUPERHOT. */
+window.__COMPLIMENTS={};
+window.__COMPLIMENT_RULES={
+  TC:["HAMMER"],
+  S8:["ATH","ATL","SS","SR"]
+};
+
+function buildComplimentControls(){
+  ["TC","S8"].forEach(primary=>{
+    const ta=$("s_"+primary);
+    if(!ta)return;
+    const wrap=ta.parentElement;
+    const helper=document.createElement("div");
+    helper.className="compliment-helper";
+    const options=window.__COMPLIMENT_RULES[primary];
+    helper.innerHTML=`
+      <div class="compliment-label">COMPLIMENTS — ${primary}</div>
+      <div class="compliment-types">
+        ${options.map(x=>`<button type="button" data-primary="${primary}" data-comp="${x}">${x}</button>`).join("")}
+      </div>`;
+    wrap.appendChild(helper);
+
+    helper.querySelectorAll("[data-comp]").forEach(btn=>{
+      btn.onclick=()=>{
+        const wasActive=btn.classList.contains("active");
+        helper.querySelectorAll("[data-comp]").forEach(b=>b.classList.remove("active"));
+        if(wasActive){
+          helper.dataset.selected="";
+        }else{
+          btn.classList.add("active");
+          helper.dataset.selected=btn.dataset.comp;
+        }
+        refreshCompliments();
+        calc();
+      };
+    });
+  });
+}
+function refreshCompliments(){
+  window.__COMPLIMENTS={};
+  ["TC","S8"].forEach(primary=>{
+    const ta=$("s_"+primary);
+    const helper=ta?.parentElement.querySelector(".compliment-helper");
+    const comp=helper?.dataset.selected;
+    if(!ta||!comp)return;
+    listStocks(ta.value).forEach(stock=>{
+      window.__COMPLIMENTS[stock]={primary,compliment:comp};
+    });
+  });
+}
+buildComplimentControls();
+
+function refreshBOBCompliments(){
+  window.__BOBCompliments={};
+  const ta=$("s_BOB");
+  if(!ta)return;
+  const type=document.querySelector(".bob-helper")?.dataset.selected;
+  if(!type)return;
+  listStocks(ta.value).forEach(stock=>window.__BOBCompliments[stock]=type);
+}
+
+
+ALL_GROUPS.forEach(n=>{
+  const ta=$("s_"+n);
+  if(!ta)return;
+
+  ta.addEventListener("input",()=>{
+    const parts=ta.value.split(/([,;\n])/);
+    const last=parts.length-1;
+    if(!/[,\n;]/.test(parts[last])) parts[last]=parts[last].toUpperCase();
+    ta.value=parts.join("");
+    showSuggestions(n);
+    calc();
+  });
+
+  ta.addEventListener("focus",()=>showSuggestions(n));
+  ta.addEventListener("blur",()=>setTimeout(()=>{
+    normalizeAll();
+    const box=$("sg_"+n);
+    if(box)box.style.display="none";
+    calc();
+  },180));
+});
+
+function possibleDuplicate(stock, allRows){
+  const same=allRows.filter(x=>x!==stock);
+  // Deliberately conservative: only flag very close strings, never block.
+  return same.find(x=>{
+    if(Math.abs(x.length-stock.length)>2)return false;
+    let d=0;
+    const m=stock.length,n=x.length;
+    const dp=Array.from({length:m+1},()=>Array(n+1).fill(0));
+    for(let i=0;i<=m;i++)dp[i][0]=i;
+    for(let j=0;j<=n;j++)dp[0][j]=j;
+    for(let i=1;i<=m;i++)for(let j=1;j<=n;j++)
+      dp[i][j]=Math.min(dp[i-1][j]+1,dp[i][j-1]+1,dp[i-1][j-1]+(stock[i-1]===x[j-1]?0:1));
+    d=dp[m][n];
+    return d<=1;
+  });
+}
+
+function calc(){
+  refreshCompliments();
+  const map={};
+
+  function add(list,group){
+    list.forEach(n=>{
+      const ta=$("s_"+n);
+      if(!ta)return;
+      listStocks(ta.value).forEach(stock=>{
+        if(!map[stock])map[stock]={primary:[],secondary:[],open:[]};
+        if(!map[stock][group].includes(n))map[stock][group].push(n);
+      });
+    });
+  }
+
+  add(PRIMARY,"primary");
+  add(SECONDARY,"secondary");
+  add(OPEN,"open");
+
+  const rows=Object.entries(map).map(([stock,v])=>{
+    const p=v.primary.length>0, s=v.secondary.length>0, o=v.open.length>0;
+
+    const compliment=window.__COMPLIMENTS[stock];
+    const complimented=!!compliment && v.primary.includes(compliment.primary);
+
+    let status="Secondary Only";
+    if(p && (s||complimented) && o)status="SuperHot Confirmed";
+    else if(p && (s||complimented))status="SuperHot";
+    else if(p && o)status="Hot Confirmed";
+    else if(p)status="Hot";
+
+    return {stock,...v,status};
+  });
+
+  const order={"SuperHot Confirmed":1,SuperHot:2,"Hot Confirmed":3,Hot:4,"Secondary Only":5};
+  rows.sort((a,b)=>(order[a.status]-order[b.status])||a.stock.localeCompare(b.stock));
+
+  if($("all"))$("all").textContent=rows.length;
+  if($("sh"))$("sh").textContent=rows.filter(x=>x.status==="SuperHot" || x.status==="SuperHot Confirmed").length;
+  if($("hh"))$("hh").textContent=rows.filter(x=>x.status==="Hot" || x.status==="Hot Confirmed").length;
+  if($("ww"))$("ww").textContent=rows.filter(x=>x.primary.length).length;
+
+  const all=rows.map(x=>x.stock);
+
+
+  const superHot=rows.filter(x=>x.status==="SuperHot"||x.status==="SuperHot Confirmed").map(x=>x.stock);
+  const hot=rows.filter(x=>x.status==="Hot"||x.status==="Hot Confirmed").map(x=>x.stock);
+
+  if($("superHotWatch"))$("superHotWatch").value=superHot.join(",");
+  if($("hotWatch"))$("hotWatch").value=hot.join(",");
+
+  if($("rows"))$("rows").innerHTML=rows.length?rows.map(x=>{
+    const near=possibleDuplicate(x.stock,all);
+    const warning=near && near!==x.stock
+      ? `<div class="typo-warning">⚠ Check spelling: similar to ${near}</div>` : "";
+
+    return `<tr>
+      <td><strong>${x.stock}</strong>${warning}</td>
+      <td>${x.primary.length?x.primary.map(s=>`<span class="chip primary-chip">${s}</span>`).join(""):"—"}</td>
+      <td>${x.secondary.length?x.secondary.map(s=>`<span class="chip secondary-chip">${s}</span>`).join(""):"—"}</td>
+      <td>${x.open.length?x.open.map(s=>`<span class="chip open-chip">${s}</span>`).join(""):"—"}</td>
+      <td><span class="badge ${x.status.replace(/\s+/g,"-").toLowerCase()}">${
+        x.status==="SuperHot Confirmed"?"🔥🔥 SUPERHOT — CONFIRMED":
+        x.status==="SuperHot"?"🔥🔥 SUPERHOT":
+        x.status==="Hot Confirmed"?"🔥 HOT — CONFIRMED":
+        x.status==="Hot"?"🔥 HOT":"○ SECONDARY ONLY"
+      }</span></td>
+    </tr>`;
+  }).join(""):'<tr><td colspan="5">Your selected stocks will appear here automatically.</td></tr>';
+}
+
+function save(){
+  normalizeAll();
+  const d={};
+  ["date","name","market"].forEach(x=>{if($(x))d[x]=$(x).value});
+  ALL_GROUPS.forEach(n=>{if($("s_"+n))d["s_"+n]=$("s_"+n).value});
+  localStorage.setItem("ATTD_Daily_Trade_Selection_Desk_V10",JSON.stringify(d));
+  alert("Saved in this browser.");
+}
+function load(){
+  const d=JSON.parse(localStorage.getItem("ATTD_Daily_Trade_Selection_Desk_V10")||"null");
+  if(!d)return alert("No saved data.");
+  Object.keys(d).forEach(x=>{if($(x))$(x).value=d[x]});
+  normalizeAll(); calc();
+}
+function reset(){
+  if(!confirm("Reset today's selection desk?"))return;
+  if($("date"))$("date").value=today();
+  if($("name"))$("name").value="";
+  ALL_GROUPS.forEach(n=>{if($("s_"+n))$("s_"+n).value=""});
+  calc();
+}
+
+
+function copyText(id, label){
+  const el=$(id);
+  if(!el)return;
+  const text=el.value.trim();
+  if(!text){ if($("copyMsg"))$("copyMsg").textContent="No "+label+" stocks to copy."; return; }
+  navigator.clipboard?.writeText(text).then(()=>{
+    if($("copyMsg"))$("copyMsg").textContent="✓ "+label+" copied.";
+  }).catch(()=>{
+    el.removeAttribute("readonly"); el.select(); document.execCommand("copy"); el.setAttribute("readonly","readonly");
+    if($("copyMsg"))$("copyMsg").textContent="✓ "+label+" copied.";
+  });
+}
+$("copySuperHot")?.addEventListener("click",()=>copyText("superHotWatch","SuperHot"));
+$("copyHot")?.addEventListener("click",()=>copyText("hotWatch","Hot"));
+$("copyWatchlist")?.addEventListener("click",()=>{
+  const a=$("superHotWatch")?.value.trim()||"", b=$("hotWatch")?.value.trim()||"";
+  const text=[a,b].filter(Boolean).join(",");
+  if(!text){if($("copyMsg"))$("copyMsg").textContent="No Hot/SuperHot stocks to copy.";return;}
+  navigator.clipboard?.writeText(text).then(()=>{
+    if($("copyMsg"))$("copyMsg").textContent="✓ Hot + SuperHot copied.";
+  }).catch(()=>{
+    const temp=document.createElement("textarea");temp.value=text;document.body.appendChild(temp);
+    temp.select();document.execCommand("copy");temp.remove();
+    if($("copyMsg"))$("copyMsg").textContent="✓ Hot + SuperHot copied.";
+  });
+});
+
+calc();
+</script>
+<script>
+(function(){
+  const DEMO = {
+    FNO: [
+      "AARTIIND","ABB","ABBOTINDIA","ACC","ADANIENT","ADANIPORTS","ALKEM","AMBUJACEM",
+      "APOLLOHOSP","APOLLOTYRE","ASHOKLEY","ASIANPAINT","ASTRAL","AUBANK","AXISBANK",
+      "BAJAJ-AUTO","BAJFINANCE","BAJAJFINSV","BEL","BHARTIARTL","BHEL","BPCL","BRITANNIA",
+      "CANBK","CHOLAFIN","CIPLA","COALINDIA","COLPAL","CUMMINSIND","DABUR","DALBHARAT",
+      "DEEPAKNTR","DELHIVERY","DIVISLAB","DLF","DRREDDY","EICHERMOT","EXIDEIND","FEDERALBNK",
+      "GAIL","GLENMARK","GODREJCP","GRASIM","HAL","HAVELLS","HDFCBANK","HDFCLIFE","HEROMOTOCO",
+      "HINDALCO","HINDPETRO","HINDUNILVR","ICICIBANK","ICICIGI","ICICIPRULI","IDEA","IDFCFIRSTB",
+      "INDHOTEL","INDIAMART","INDIGO","INDUSINDBK","INFY","IOC","IRCTC","IRFC","ITC","JINDALSTEL",
+      "JIOFIN","JSWSTEEL","JUBLFOOD","KALYANKJIL","KEI","KOTAKBANK","LAURUSLABS","LICHSGFIN",
+      "LT","LTF","LTIM","LUPIN","M&M","M&MFIN","MANAPPURAM","MARICO","MARUTI","MCX","MGL",
+      "MFSL","MOTHERSON","MPHASIS","MRF","MUTHOOTFIN","NATIONALUM","NAUKRI","NBCC","NCC","NESTLEIND",
+      "NHPC","NMDC","NTPC","OBEROIRLTY","OFSS","OIL","ONGC","PAGEIND","PAYTM","PEL","PERSISTENT",
+      "PETRONET","PFC","PIDILITIND","PIIND","PNB","POLYCAB","POWERGRID","PVRINOX","RAMCOCEM",
+      "RBLBANK","RECLTD","RELIANCE","SAIL","SBICARD","SBILIFE","SBIN","SHREECEM","SHRIRAMFIN",
+      "SIEMENS","SJVN","SOLARINDS","SONACOMS","SRF","SUNPHARMA","SUPREMEIND","SYNGENE","TATACHEM",
+      "TATACONSUM","TATAELXSI","TATAMOTORS","TATAPOWER","TATASTEEL","TCS","TECHM","TIINDIA",
+      "TITAN","TORNTPHARM","TORNTPOWER","TRENT","TVSMOTOR","UBL","ULTRACEMCO","UNIONBANK","UNITEDSPIRITS",
+      "UPL","VEDL","VOLTAS","WIPRO","YESBANK","ZYDUSLIFE","ANGELONE","IREDA","HAL","HUDCO"
+    ],
+    NIFTY500: [
+      "ADANIENT","ADANIPORTS","APOLLOHOSP","ASIANPAINT","AXISBANK","BAJAJ-AUTO","BAJFINANCE",
+      "BAJAJFINSV","BHARTIARTL","BPCL","BRITANNIA","CIPLA","COALINDIA","DIVISLAB","DRREDDY",
+      "EICHERMOT","GRASIM","HCLTECH","HDFCBANK","HDFCLIFE","HEROMOTOCO","HINDALCO","HINDUNILVR",
+      "ICICIBANK","INDUSINDBK","INFY","ITC","JSWSTEEL","KOTAKBANK","LT","M&M","MARUTI","NESTLEIND",
+      "NTPC","ONGC","POWERGRID","RELIANCE","SBILIFE","SBIN","SHREECEM","SUNPHARMA","TATACONSUM",
+      "TATAMOTORS","TATASTEEL","TCS","TECHM","TITAN","TRENT","ULTRACEMCO","WIPRO","ABB","ACC",
+      "ADANIENSOL","AMBUJACEM","BEL","BHEL","CANBK","CUMMINSIND","DLF","HAL","HAVELLS","INDHOTEL",
+      "JINDALSTEL","LICI","LTIM","MOTHERSON","NHPC","PIDILITIND","PNB","PFC","RECLTD","SAIL","SIEMENS",
+      "TVSMOTOR","VEDL","VOLTAS","ZOMATO","ANGELONE","JIOFIN","PAYTM","IRFC","IREDA","INDIANB"
+    ]
+  };
+
+  let custom = null;
+  const $ = id => document.getElementById(id);
+  const norm = s => (s||"").toUpperCase().replace(/[^A-Z0-9&-]/g,"").trim();
+
+  function levenshtein(a,b){
+    const m=a.length,n=b.length,d=Array.from({length:m+1},()=>Array(n+1).fill(0));
+    for(let i=0;i<=m;i++)d[i][0]=i;
+    for(let j=0;j<=n;j++)d[0][j]=j;
+    for(let i=1;i<=m;i++)for(let j=1;j<=n;j++)
+      d[i][j]=Math.min(d[i-1][j]+1,d[i][j-1]+1,d[i-1][j-1]+(a[i-1]===b[j-1]?0:1));
+    return d[m][n];
+  }
+  function universe(){
+    const u=$("universeSelect").value;
+    if(custom) return u==="BOTH" ? [...new Set([...(custom.FNO||[]),...(custom.NIFTY500||[])])] :
+      u==="FNO" ? (custom.FNO||[]) : u==="NIFTY500" ? (custom.NIFTY500||[]) :
+      [...new Set([...(custom.FNO||[]),...(custom.NIFTY500||[])])];
+    if(u==="BOTH") return [...new Set([...DEMO.FNO,...DEMO.NIFTY500])];
+    if(u==="FNO") return DEMO.FNO;
+    if(u==="NIFTY500") return DEMO.NIFTY500;
+    return [...new Set([...DEMO.FNO,...DEMO.NIFTY500])];
+  }
+  function nearest(v,list){
+    return list.map(x=>[x,levenshtein(v,x)]).sort((a,b)=>a[1]-b[1]).slice(0,3);
+  }
+  function check(){
+    const raw=$("stockCheck").value, v=norm(raw);
+    $("stockCheck").value=v;
+    if(!v){$("checkResult").innerHTML="";$("suggestions").style.display="none";return;}
+    const list=universe();
+    if(list.includes(v)){
+      const f=DEMO.FNO.includes(v), n=DEMO.NIFTY500.includes(v);
+      $("checkResult").innerHTML='<div style="padding:11px 13px;border-radius:10px;background:#edf8ef;border:1px solid #b7dfc0;color:#176b2c;"><strong>✓ VALID:</strong> '+v+' — '+(f?'F&O':'')+(f&&n?' + ':'')+(n?'NIFTY 500':'')+'</div>';
+      $("suggestions").style.display="none"; return;
+    }
+    const ns=nearest(v,list), best=ns[0];
+    if(best && best[1] <= Math.max(1,Math.floor(v.length*0.28))){
+      $("checkResult").innerHTML='<div style="padding:11px 13px;border-radius:10px;background:#fff7e6;border:1px solid #efc46a;color:#7a4b00;"><strong>⚠ POSSIBLE TYPO:</strong> '+v+'</div>';
+      $("suggestions").style.display="block";
+      $("suggestions").innerHTML='<div style="padding:11px 13px;border-radius:10px;background:#fffaf0;border:1px solid #efd59a;">Did you mean <strong>'+best[0]+'</strong>? <button type="button" id="useBest">USE '+best[0]+'</button></div>';
+      $("useBest").onclick=()=>{$("stockCheck").value=best[0];check();};
+    } else {
+      $("checkResult").innerHTML='<div style="padding:11px 13px;border-radius:10px;background:#fff0f0;border:1px solid #e1aaaa;color:#9a1f1f;"><strong>✕ NOT FOUND</strong> in the selected universe.</div>';
+      $("suggestions").style.display="none";
+    }
+  }
+  $("stockCheck").addEventListener("input",check);
+  $("checkBtn").onclick=check;
+  $("universeSelect").addEventListener("change",()=>{ $("universeMeta").textContent=universe().length+" symbols loaded (preview/master data)"; check(); });
+  $("universeMeta").textContent=universe().length+" symbols loaded (preview/master data)";
+
+  $("importBtn").onclick=()=>$("universeFile").click();
+  $("universeFile").addEventListener("change",async e=>{
+    const f=e.target.files[0]; if(!f)return;
+    const text=await f.text();
+    try{
+      if(f.name.toLowerCase().endsWith(".json")){
+        const j=JSON.parse(text);
+        custom={FNO:(j.FNO||j.fno||[]).map(norm),NIFTY500:(j.NIFTY500||j.nifty500||[]).map(norm)};
+      } else {
+        const lines=text.split(/\r?\n/).filter(Boolean);
+        const rows=lines.map(x=>x.split(",").map(s=>s.replace(/^"|"$/g,"").trim()));
+        const headers=rows[0].map(norm);
+        const symIdx=Math.max(0,headers.findIndex(x=>/SYMBOL|SYMBOLS|TICKER/.test(x)));
+        const syms=rows.slice(1).map(r=>norm(r[symIdx])).filter(Boolean);
+        custom={FNO:syms,NIFTY500:syms};
+      }
+      $("universeMeta").textContent=universe().length+" symbols loaded from imported file";
+      check();
+    }catch(err){alert("Could not read the universe file. Use CSV or JSON.");}
+  });
+
+  // Demo exactly matching the user's typo scenario.
+  $("stockCheck").value="Angleone";
+  check();
+})();
+</script>
+
+</body></html>
