@@ -118,120 +118,7 @@ button{border:0;border-radius:6px;padding:10px 15px;font-weight:700;cursor:point
  .section-title{print-color-adjust:exact;-webkit-print-color-adjust:exact}
  th{print-color-adjust:exact;-webkit-print-color-adjust:exact}
 }
-
-/* =========================================================
-   MOBILE / iPHONE LAYOUT
-   ========================================================= */
-@media screen and (max-width:600px){
-  html,body{
-    width:100%;
-    min-width:0;
-    overflow-x:hidden;
-    -webkit-text-size-adjust:100%;
-  }
-  body{
-    font-size:14px;
-  }
-  .wrap{
-    width:100%;
-    max-width:none;
-    margin:0 auto;
-    padding:12px 9px 24px;
-  }
-  h1{
-    font-size:22px;
-    line-height:1.15;
-  }
-  .sub{
-    font-size:11px;
-    line-height:1.4;
-    margin:5px 0 14px;
-  }
-  .section{
-    margin:12px 0 0;
-  }
-  .section-title{
-    font-size:14px;
-    padding:9px 10px;
-  }
-  .grid,
-  .forecast .grid,
-  .score{
-    grid-template-columns:1fr!important;
-    gap:8px;
-    padding:10px;
-  }
-  .field label{
-    font-size:11px;
-    margin-bottom:4px;
-  }
-  input,select{
-    width:100%;
-    height:42px;
-    font-size:16px; /* prevents iOS Safari zoom on focus */
-    padding:8px 10px;
-  }
-  .value{
-    height:42px;
-    font-size:14px;
-  }
-  .table-wrap{
-    width:100%;
-    overflow-x:auto;
-    -webkit-overflow-scrolling:touch;
-  }
-  table{
-    min-width:1120px;
-  }
-  th{
-    font-size:11px;
-    padding:9px 6px;
-  }
-  td{
-    padding:5px;
-  }
-  td input,td select{
-    height:40px;
-    font-size:16px;
-  }
-  .score .item{
-    min-height:40px;
-    padding:9px 10px;
-  }
-  .score .label{
-    font-size:12px;
-  }
-  .score .num{
-    font-size:14px;
-  }
-  .actions{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:8px;
-    margin:12px 0;
-  }
-  button{
-    width:100%;
-    min-height:44px;
-    font-size:14px;
-  }
-  .note{
-    font-size:10px;
-    line-height:1.45;
-    padding:8px 0 20px;
-  }
-}
-
 </style>
-
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#17365d">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="DAILY AUKAAT">
-<meta name="mobile-web-app-capable" content="yes">
-<link rel="apple-touch-icon" href="icon-192.png">
-
 </head>
 <body>
 <div class="wrap">
@@ -261,7 +148,7 @@ button{border:0;border-radius:6px;padding:10px 15px;font-weight:700;cursor:point
       </div>
       <div class="field"><label id="salaryLabel">Monthly Salary / Income (₹)</label><input id="salary" type="number" value="100000" min="0" step="1000"></div>
       <div class="field"><label>Trading Days / Month</label><input id="days" type="number" value="20" min="1" step="1"></div>
-      <div class="field"><label>Max Trades / Day</label><input id="maxTrades" type="number" value="4" min="1" max="50" step="1"></div>
+      <div class="field"><label>Max Trades / Day</label><input id="maxTrades" type="number" value="1" min="1" max="50" step="1"></div>
       <div class="field"><label>Risk : Reward</label><input id="rr" type="number" value="5" min="0.1" step="0.1"></div>
     </div>
   </div>
@@ -323,7 +210,7 @@ button{border:0;border-radius:6px;padding:10px 15px;font-weight:700;cursor:point
   <div class="note">
     <b>Position sizing:</b> Capital Qty = Capital ÷ Entry. Risk Qty = Max Risk / Trade ÷ |Entry − SL|.
     Final Qty = Capital Qty normally; when Result is <b>SL</b>, Final Qty switches to Risk Qty.
-    TP is automatically calculated using the selected Risk : Reward ratio. Manual positive exits count as Wins and negative exits as Losses.
+    SL is automatically calculated from Max Risk / Trade until you manually override it (clear SL to return to Auto). TP is calculated from the selected Risk : Reward ratio. When Result is SL or TP, Exit Price is filled automatically; Manual uses the trader-entered exit.
     Currency changes the display currency only; it does not perform FX conversion.
   </div>
 </div>
@@ -365,7 +252,7 @@ function normalizeDateInput(el){
 const tbody=document.getElementById("trades");
 
 function buildTradeRows(){
-  const requested=Math.max(1,Math.min(50,Math.floor(nval("maxTrades")||4)));
+  const requested=Math.max(1,Math.min(50,Math.floor(nval("maxTrades")||1)));
   tbody.innerHTML="";
   for(let i=1;i<=requested;i++){
     const tr=document.createElement("tr");
@@ -378,17 +265,35 @@ function buildTradeRows(){
       <td><div class="value auto" id="riskQty${i}">—</div></td>
       <td><div class="value final" id="finalQty${i}">—</div></td>
       <td><input id="entry${i}" type="number" min="0" step="0.01"></td>
-      <td><input id="sl${i}" type="number" min="0" step="0.01"></td>
+      <td><input id="sl${i}" type="number" min="0" step="0.01" placeholder="Auto"></td>
       <td><div class="value auto" id="tp${i}">—</div></td>
       <td><select id="result${i}"><option>Open</option><option>SL</option><option>TP</option><option>Manual</option></select></td>
-      <td><input id="exit${i}" type="number" min="0" step="0.01"></td>
+      <td><input id="exit${i}" type="number" min="0" step="0.01" placeholder="Auto"></td>
       <td><div class="value auto" id="pnl${i}">—</div></td>
       <td><div class="value auto" id="r${i}">—</div></td>`;
     tbody.appendChild(tr);
   }
   document.querySelectorAll("#trades input,#trades select").forEach(x=>{
-    x.addEventListener("input",calc);
-    x.addEventListener("change",calc);
+    x.addEventListener("input", function(){
+      if(this.id.startsWith("stock")){
+        const start=this.selectionStart;
+        const oldLen=this.value.length;
+        this.value=this.value.toUpperCase();
+        const newLen=this.value.length;
+        if(document.activeElement===this && start!==null){
+          this.setSelectionRange(start + (newLen-oldLen), start + (newLen-oldLen));
+        }
+      }
+      if(this.id.startsWith("sl")) this.dataset.manual=this.value.trim()==="" ? "false" : "true";
+      if(this.id.startsWith("exit")) this.dataset.manual="true";
+      calc();
+    });
+    x.addEventListener("change", function(){
+      if(this.id.startsWith("side") || this.id.startsWith("capital") || this.id.startsWith("entry")) {
+        // Keep SL automatic unless the trader has manually overridden it.
+      }
+      calc();
+    });
   });
 }
 
@@ -408,12 +313,27 @@ document.querySelectorAll("input,select").forEach(x=>x.addEventListener("change"
 document.getElementById("date").addEventListener("input",function(){normalizeDateInput(this)});
 document.getElementById("currency").addEventListener("change",calc);
 
+function autoStopLoss(i, entry, capital, side, riskTrade){
+  const slEl=document.getElementById("sl"+i);
+  if(!slEl || slEl.dataset.manual==="true") return;
+  if(entry>0 && capital>0 && side && riskTrade>0){
+    const capQty=Math.floor(capital/entry);
+    if(capQty>0){
+      const riskDistance=riskTrade/capQty;
+      const sl=side==="BUY" ? entry-riskDistance : entry+riskDistance;
+      slEl.value=Math.max(0,sl).toFixed(2);
+    }
+  }else{
+    slEl.value="";
+  }
+}
+
 function calc(){
   document.getElementById("printRecordName").textContent = document.getElementById("recordName").value.trim() || "—";
   document.getElementById("printRecordDate").textContent = document.getElementById("date").value || "—";
   const c = currencyMap[currencyCode()] || currencyMap.INR;
   document.getElementById("salaryLabel").textContent = "Monthly Salary / Income (" + c.symbol + ")";
-  const salary=nval("salary"), days=nval("days"), maxTrades=Math.max(1,Math.min(50,Math.floor(nval("maxTrades")||4)));
+  const salary=nval("salary"), days=nval("days"), maxTrades=Math.max(1,Math.min(50,Math.floor(nval("maxTrades")||1)));
   const rr=Math.max(0.1,nval("rr")||5);
   const salaryDay=days?salary/days:0, dailyRisk=salaryDay*.25;
   const riskTrade=maxTrades?dailyRisk/maxTrades:0, targetTrade=riskTrade*rr;
@@ -430,8 +350,10 @@ function calc(){
   let completed=0,wins=0,losses=0,totalPnl=0,totalR=0,riskUsed=0;
 
   for(let i=1;i<=maxTrades;i++){
-    const capital=nval("capital"+i), entry=nval("entry"+i), sl=nval("sl"+i);
-    const side=val("side"+i), result=val("result"+i), exit=nval("exit"+i);
+    const capital=nval("capital"+i), entry=nval("entry"+i);
+    const side=val("side"+i), result=val("result"+i);
+    autoStopLoss(i, entry, capital, side, riskTrade);
+    const sl=nval("sl"+i), exit=nval("exit"+i);
     const capQty=(capital>0 && entry>0)?Math.floor(capital/entry):0;
     const riskQty=(entry>0 && sl>0 && entry!==sl)?Math.floor(riskTrade/Math.abs(entry-sl)):0;
 
@@ -444,13 +366,27 @@ function calc(){
       tp=side==="BUY" ? entry+rr*Math.abs(entry-sl) : entry-rr*Math.abs(entry-sl);
     }
 
+    // TP/SL results use the calculated exit automatically. Manual uses trader-entered exit.
+    const exitEl=document.getElementById("exit"+i);
+    if(result==="SL" && sl>0){
+      exitEl.value=sl.toFixed(2);
+      exitEl.dataset.manual="false";
+    }else if(result==="TP" && tp>0){
+      exitEl.value=tp.toFixed(2);
+      exitEl.dataset.manual="false";
+    }else if(result==="Open"){
+      exitEl.value="";
+      exitEl.dataset.manual="false";
+    }
+    const effectiveExit=nval("exit"+i);
+
     let pnl=null, R=null;
     if(result==="SL" && entry>0 && sl>0 && finalQty){
       pnl=-Math.abs(entry-sl)*finalQty;
     }else if(result==="TP" && entry>0 && tp>0 && finalQty){
       pnl=(side==="BUY" ? tp-entry : entry-tp)*finalQty;
-    }else if(result==="Manual" && entry>0 && exit>0 && finalQty){
-      pnl=(side==="BUY" ? exit-entry : entry-exit)*finalQty;
+    }else if(result==="Manual" && entry>0 && effectiveExit>0 && finalQty){
+      pnl=(side==="BUY" ? effectiveExit-entry : entry-effectiveExit)*finalQty;
     }
 
     if(pnl!==null){
@@ -487,9 +423,10 @@ function calc(){
 }
 function saveData(){
   const ids=["date","recordName","currency","salary","days","maxTrades","rr"];
-  const count=Math.max(1,Math.min(50,Math.floor(nval("maxTrades")||4)));
+  const count=Math.max(1,Math.min(50,Math.floor(nval("maxTrades")||1)));
   for(let i=1;i<=count;i++) ids.push("stock"+i,"side"+i,"capital"+i,"entry"+i,"sl"+i,"result"+i,"exit"+i);
   const data={}; ids.forEach(id=>{const el=document.getElementById(id); if(el) data[id]=el.value;});
+  for(let i=1;i<=count;i++) data["slManual"+i]=document.getElementById("sl"+i)?.dataset.manual==="true";
   localStorage.setItem("ATTD_Trading_Calculator",JSON.stringify(data));
   alert("Today's DAILY AUKAAT data saved in this browser.");
 }
@@ -497,10 +434,14 @@ function loadData(){
   const raw=localStorage.getItem("ATTD_Trading_Calculator");
   if(!raw){alert("No saved data found in this browser.");return}
   const data=JSON.parse(raw);
-  Object.keys(data).forEach(id=>{if(id==="maxTrades") return; const el=document.getElementById(id); if(el) el.value=data[id]});
+  Object.keys(data).forEach(id=>{if(id==="maxTrades" || id.startsWith("slManual")) return; const el=document.getElementById(id); if(el) el.value=data[id]});
   if(data.maxTrades) document.getElementById("maxTrades").value=data.maxTrades;
   buildTradeRows();
-  Object.keys(data).forEach(id=>{const el=document.getElementById(id); if(el) el.value=data[id]});
+  Object.keys(data).forEach(id=>{
+    const el=document.getElementById(id);
+    if(el) el.value=(id.startsWith("stock") ? String(data[id]||"").toUpperCase() : data[id]);
+  });
+  Object.keys(data).forEach(id=>{if(id.startsWith("slManual")){ const i=id.replace("slManual",""); const el=document.getElementById("sl"+i); if(el) el.dataset.manual=data[id] ? "true" : "false"; }});
   calc();
 }
 function resetAll(){
@@ -511,36 +452,14 @@ function resetAll(){
   document.getElementById("currency").value="INR";
   document.getElementById("salary").value=100000;
   document.getElementById("days").value=20;
-  document.getElementById("maxTrades").value=4;
+  document.getElementById("maxTrades").value=1;
   document.getElementById("rr").value=5;
   buildTradeRows();
   document.querySelectorAll("#trades select").forEach((x)=>x.selectedIndex=0);
   calc();
 }
-function initializeCalculator(){
-  try{
-    buildTradeRows();
-    calc();
-  }catch(err){
-    console.error("DAILY AUKAAT initialization error:", err);
-  }
-}
-if(document.readyState === "loading"){
-  document.addEventListener("DOMContentLoaded", initializeCalculator);
-}else{
-  initializeCalculator();
-}
+buildTradeRows();
+calc();
 </script>
-
-<script>
-if ("serviceWorker" in navigator) {
-  window.addEventListener("load", function () {
-    navigator.serviceWorker.register("./service-worker.js").catch(function (err) {
-      console.log("PWA service worker:", err);
-    });
-  });
-}
-</script>
-
 </body>
 </html>
