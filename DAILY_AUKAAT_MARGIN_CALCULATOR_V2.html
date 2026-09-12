@@ -3,7 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<link rel="apple-touch-icon" href="./icon-192.png">
+<link rel="apple-touch-icon" href="./margin-icon-192.png">
+<link rel="manifest" href="./margin-manifest.json">
 <title>DAILY AUKAAT MARGIN CALCULATOR</title>
 <style>
 :root{--blue:#2864d7;--navy:#17365d;--bg:#f5f7fb;--card:#fff;--line:#d9e2f3;--text:#172033;--muted:#687386;--green:#16833b;--red:#c62828;--amber:#fff3cd}
@@ -165,4 +166,5 @@ function loadData(){const raw=localStorage.getItem("ATTD_Margin_Calculator");if(
 function resetAll(){if(!confirm("Reset today's margin calculator?"))return;document.querySelectorAll("input").forEach(x=>x.value="");el("date").value=today();el("capitalBase").value=100000;el("leverage").value="4";el("customLev").value=4;el("maxTrades").value=1;el("riskPct").value=1;el("rr").value=5;el("recordName").value="";el("customLevField").style.display="none";buildRows();calc()}
 buildRows();calc();
 </script>
+<script>if("serviceWorker" in navigator)navigator.serviceWorker.register("./margin-service-worker.js");</script>
 </body></html>
