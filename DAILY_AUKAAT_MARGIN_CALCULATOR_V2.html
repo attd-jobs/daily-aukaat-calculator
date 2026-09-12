@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<link rel="apple-touch-icon" href="./icon-192.png">
+<title>DAILY AUKAAT MARGIN CALCULATOR</title>
+<style>
+:root{--blue:#2864d7;--navy:#17365d;--bg:#f5f7fb;--card:#fff;--line:#d9e2f3;--text:#172033;--muted:#687386;--green:#16833b;--red:#c62828;--amber:#fff3cd}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:Arial,Helvetica,sans-serif;color:var(--text)}
+.wrap{max-width:1450px;margin:22px auto;padding:0 16px}h1{margin:0;color:var(--navy);font-size:28px}.sub{color:var(--muted);margin:5px 0 20px}
+.section{margin:18px 0 0}.section-title{background:var(--blue);color:#fff;font-weight:700;font-size:17px;padding:10px 14px;border-radius:7px 7px 0 0}
+.grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;background:var(--card);padding:14px;border:1px solid var(--line);border-top:0}
+.field label{display:block;font-size:12px;font-weight:700;color:var(--muted);margin-bottom:5px}
+input,select{width:100%;height:38px;border:1px solid #cbd5e1;border-radius:6px;padding:7px 9px;font-size:14px;background:#fff}
+.value{height:38px;display:flex;align-items:center;justify-content:center;background:#f2f5fa;border:1px solid var(--line);border-radius:6px;font-weight:700}
+.green{color:var(--green)}.red{color:var(--red)}.warn{background:var(--amber)!important;color:#7a5800}
+.table-wrap{overflow-x:auto;background:#fff;border:1px solid var(--line);border-top:0}
+table{width:100%;border-collapse:collapse;min-width:1240px}th{background:var(--navy);color:#fff;padding:10px 7px;font-size:12px;white-space:nowrap}
+td{padding:5px;border-bottom:1px solid var(--line);text-align:center}td input,td select{height:34px;font-size:13px}
+.auto{background:#f2f5fa;font-weight:700}.final{background:#e2f0d9!important;font-weight:700}
+.score{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;background:#fff;padding:14px;border:1px solid var(--line);border-top:0}
+.score .item{display:flex;justify-content:space-between;gap:8px;align-items:center;border:1px solid var(--line);background:#f2f5fa;padding:9px 11px;border-radius:6px}
+.score .label{font-weight:700;color:var(--muted);font-size:13px}.score .num{font-weight:800}
+.actions{display:flex;gap:10px;margin:16px 0;flex-wrap:wrap}button{border:0;border-radius:6px;padding:10px 15px;font-weight:700;cursor:pointer}
+.primary{background:var(--blue);color:#fff}.secondary{background:#e8edf5;color:var(--navy)}.danger{background:#fbe4e4;color:var(--red)}
+.note{font-size:12px;color:var(--muted);padding:12px 0 30px}
+@page{size:A4 landscape;margin:8mm}
+@media(max-width:900px){.grid,.score{grid-template-columns:repeat(2,1fr)}h1{font-size:23px}}
+@media(max-width:600px){.grid,.score{grid-template-columns:1fr}.wrap{padding:0 9px;margin:12px auto}}
+@media print{
+html,body{width:100%!important;background:#fff!important}body{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
+.wrap{width:100%!important;max-width:none!important;margin:0!important;padding:0!important}h1{font-size:22px!important;margin:0!important}.sub{font-size:10px!important;margin:4px 0 7px!important}
+.print-record{font-size:11px!important;margin:-2px 0 7px!important}.section{margin:7px 0 0!important}.section-title{font-size:11px!important;padding:5px 8px!important}
+.grid{padding:6px!important;gap:5px!important}.field label{font-size:8px!important;margin-bottom:2px!important}
+input,select,.value{height:25px!important;padding:3px 5px!important;font-size:9px!important}.table-wrap{overflow:visible!important}
+table{width:100%!important;min-width:0!important;table-layout:auto!important}th{font-size:8px!important;padding:5px 3px!important}td{font-size:8px!important;padding:2px!important}
+td input,td select{height:23px!important;font-size:8px!important;padding:2px 3px!important}.score{padding:6px!important;gap:5px!important}
+.score .item{padding:5px 7px!important}.score .label,.score .num{font-size:8px!important}.actions{display:none!important}.note{font-size:7px!important;padding:5px 0 0!important}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>DAILY AUKAAT MARGIN CALCULATOR</h1>
+<div class="sub">by Adarsh Technical Trading Desk (ATTD) • Capital + Leverage • Buying Power • Position Sizing • Planned Risk : Reward default 1 : 5</div>
+<div class="print-record" id="printRecord" style="display:none;font-size:13px;font-weight:700;color:#17365d;margin:-8px 0 14px">Record: <span id="printRecordName">—</span> &nbsp;|&nbsp; Date: <span id="printRecordDate">—</span></div>
+
+<div class="section">
+<div class="section-title">1 | CAPITAL &amp; MARGIN PLAN</div>
+<div class="grid">
+<div class="field"><label>Date (DD/MM/YYYY)</label><input id="date" type="text" inputmode="numeric" maxlength="10" placeholder="DD/MM/YYYY"></div>
+<div class="field"><label>Trader / Record Name</label><input id="recordName" type="text" placeholder="Enter name"></div>
+<div class="field"><label>Currency</label><select id="currency"><option value="INR" selected>₹ INR — Indian Rupee</option><option value="USD">$ USD</option><option value="EUR">€ EUR</option><option value="GBP">£ GBP</option><option value="JPY">¥ JPY</option><option value="AUD">$ AUD</option><option value="CAD">$ CAD</option><option value="SGD">$ SGD</option><option value="AED">د.إ AED</option></select></div>
+<div class="field"><label>Trading Capital</label><input id="capitalBase" type="number" value="100000" min="0" step="100"></div>
+<div class="field"><label>Margin / Leverage</label><select id="leverage"><option value="1">1×</option><option value="2">2×</option><option value="3">3×</option><option value="4" selected>4×</option><option value="5">5×</option><option value="6">6×</option><option value="8">8×</option><option value="10">10×</option><option value="custom">Custom</option></select></div>
+<div class="field" id="customLevField" style="display:none"><label>Custom Leverage (×)</label><input id="customLev" type="number" value="4" min="0.1" step="0.1"></div>
+<div class="field"><label>Max Trades / Day</label><input id="maxTrades" type="number" value="1" min="1" max="50" step="1"></div>
+<div class="field"><label>Risk % of Capital / Day</label><input id="riskPct" type="number" value="1" min="0" step="0.1"></div>
+<div class="field"><label>Risk : Reward</label><input id="rr" type="number" value="5" min="0.1" step="0.1"></div>
+</div>
+</div>
+
+<div class="section">
+<div class="section-title">2 | BUYING POWER &amp; RISK–REWARD</div>
+<div class="grid">
+<div class="field"><label>Trading Capital</label><div class="value" id="capitalOut">₹0.00</div></div>
+<div class="field"><label>Margin / Leverage</label><div class="value" id="levOut">4×</div></div>
+<div class="field"><label>Buying Power</label><div class="value green" id="buyingPower">₹0.00</div></div>
+<div class="field"><label>Risk / Trade • 1R</label><div class="value red" id="riskTrade">₹0.00</div></div>
+<div class="field"><label>Daily Risk Limit</label><div class="value red" id="dailyLimitTop">₹0.00</div></div>
+<div class="field"><label>Target / Trade</label><div class="value green" id="targetTrade">₹0.00</div></div>
+<div class="field"><label>Max Loss / Trade</label><div class="value red" id="maxLossTrade">-₹0.00</div></div>
+<div class="field"><label>RR Target / Day</label><div class="value green" id="targetDay">₹0.00</div></div>
+<div class="field"><label>Trades Allowed</label><div class="value" id="tradesAllowed">1</div></div>
+</div>
+</div>
+
+<div class="section">
+<div class="section-title">3 | TRADES TODAY</div>
+<div class="table-wrap"><table>
+<thead><tr><th>#</th><th>Stock / Index</th><th>Side</th><th>Entry</th><th>SL</th><th>TP (RR)</th><th>Suggested Qty</th><th>Actual Qty ✏️</th><th>Margin Used</th><th>Result</th><th>Exit Price</th><th>P&amp;L</th><th>R</th></tr></thead>
+<tbody id="trades"></tbody>
+</table></div>
+</div>
+
+<div class="section">
+<div class="section-title">4 | TODAY'S SCORECARD</div>
+<div class="score">
+<div class="item"><span class="label">Trades Completed</span><span class="num" id="completed">0</span></div>
+<div class="item"><span class="label">Wins</span><span class="num" id="wins">0</span></div>
+<div class="item"><span class="label">Losses</span><span class="num" id="losses">0</span></div>
+<div class="item"><span class="label">Win Rate</span><span class="num" id="winRate">0.0%</span></div>
+<div class="item"><span class="label">Today P&amp;L</span><span class="num" id="todayPnl">₹0.00</span></div>
+<div class="item"><span class="label">Today R</span><span class="num" id="todayR">0.00R</span></div>
+<div class="item"><span class="label">Margin Used</span><span class="num" id="marginUsed">₹0.00</span></div>
+<div class="item"><span class="label">Buying Power Remaining</span><span class="num" id="bpRemaining">₹0.00</span></div>
+<div class="item"><span class="label">Risk Used</span><span class="num" id="riskUsed">₹0.00</span></div>
+<div class="item"><span class="label">Risk Remaining</span><span class="num" id="riskRemaining">₹0.00</span></div>
+<div class="item"><span class="label">Daily Risk Limit</span><span class="num" id="dailyLimit">₹0.00</span></div>
+<div class="item"><span class="label">RR Target / Trade</span><span class="num" id="rrTarget">₹0.00</span></div>
+</div></div>
+
+<div class="actions"><button class="primary" onclick="window.print()">Print / Save PDF</button><button class="secondary" onclick="saveData()">Save Today</button><button class="secondary" onclick="loadData()">Load Saved</button><button class="danger" onclick="resetAll()">Reset</button></div>
+<div class="note"><b>Position sizing:</b> Buying Power = Trading Capital × Margin/Leverage. Suggested Qty = FLOOR(Buying Power ÷ Entry). <b>Actual Qty is editable</b> for lots/contracts such as MCX or index instruments. P&amp;L and R always use Actual Qty. Margin Used = Entry × Actual Qty ÷ Leverage. If Margin Used exceeds Buying Power, the row is highlighted. SL is automatically calculated from the daily risk allocation until manually overridden. TP follows the selected Risk : Reward. TP/SL results set Exit Price automatically; Manual uses your entered exit. Currency is display-only; no FX conversion.</div>
+</div>
+
+<script>
+const currencyMap={INR:{symbol:"₹",locale:"en-IN"},USD:{symbol:"$",locale:"en-US"},EUR:{symbol:"€",locale:"de-DE"},GBP:{symbol:"£",locale:"en-GB"},JPY:{symbol:"¥",locale:"ja-JP"},AUD:{symbol:"$",locale:"en-AU"},CAD:{symbol:"$",locale:"en-CA"},SGD:{symbol:"$",locale:"en-SG"},AED:{symbol:"د.إ",locale:"en-AE"}};
+const el=id=>document.getElementById(id), n=id=>Number(el(id)?.value)||0, money=x=>{const c=currencyMap[el("currency").value]||currencyMap.INR;return c.symbol+(Number(x)||0).toLocaleString(c.locale,{minimumFractionDigits:2,maximumFractionDigits:2})}, fmt=x=>(Number(x)||0).toLocaleString("en-IN",{maximumFractionDigits:0});
+function today(){const d=new Date();return String(d.getDate()).padStart(2,"0")+"/"+String(d.getMonth()+1).padStart(2,"0")+"/"+d.getFullYear()}
+el("date").value=today();
+function lev(){return el("leverage").value==="custom"?Math.max(.1,n("customLev")):Number(el("leverage").value)||1}
+function autoSL(i,entry,side,riskTrade,bp){
+ const s=el("sl"+i); if(!s||s.dataset.manual==="true")return;
+ const q=Math.floor(bp/entry);
+ if(entry>0&&q>0&&side&&riskTrade>0){const d=riskTrade/q;s.value=Math.max(0,side==="BUY"?entry-d:entry+d).toFixed(2)}else s.value="";
+}
+function buildRows(){
+ const count=Math.max(1,Math.min(50,Math.floor(n("maxTrades")||1))), tb=el("trades");tb.innerHTML="";
+ for(let i=1;i<=count;i++){
+  const tr=document.createElement("tr");
+  tr.innerHTML=`<td>${i}</td><td><input id="stock${i}" placeholder="Stock / Index"></td><td><select id="side${i}"><option></option><option>BUY</option><option>SELL</option></select></td><td><input id="entry${i}" type="number" min="0" step="0.01"></td><td><input id="sl${i}" type="number" min="0" step="0.01" placeholder="Auto"></td><td><div class="value auto" id="tp${i}">—</div></td><td><div class="value auto" id="suggested${i}">—</div></td><td><input id="qty${i}" type="number" min="0" step="1" placeholder="Enter Qty"></td><td><div class="value auto" id="margin${i}">—</div></td><td><select id="result${i}"><option>Open</option><option>SL</option><option>TP</option><option>Manual</option></select></td><td><input id="exit${i}" type="number" min="0" step="0.01" placeholder="Auto"></td><td><div class="value auto" id="pnl${i}">—</div></td><td><div class="value auto" id="r${i}">—</div></td>`;
+  tb.appendChild(tr);
+ }
+ document.querySelectorAll("#trades input,#trades select").forEach(x=>x.addEventListener("input",()=>{if(x.id.startsWith("stock"))x.value=x.value.toUpperCase();if(x.id.startsWith("sl"))x.dataset.manual=x.value.trim()?"true":"false";calc()}));
+ document.querySelectorAll("#trades input,#trades select").forEach(x=>x.addEventListener("change",calc));
+}
+function calc(){
+ el("printRecordName").textContent=el("recordName").value.trim()||"—";el("printRecordDate").textContent=el("date").value||"—";
+ const bp=n("capitalBase")*lev(), trades=Math.max(1,Math.min(50,Math.floor(n("maxTrades")||1))), rr=Math.max(.1,n("rr")||5), riskPct=Math.max(0,n("riskPct")), dailyRisk=n("capitalBase")*riskPct/100, riskTrade=dailyRisk/trades;
+ el("capitalOut").textContent=money(n("capitalBase"));el("levOut").textContent=lev()+"×";el("buyingPower").textContent=money(bp);
+ el("riskTrade").textContent=money(riskTrade);el("dailyLimitTop").textContent=money(dailyRisk);el("targetTrade").textContent=money(riskTrade*rr);el("maxLossTrade").textContent="-"+money(riskTrade);
+ el("targetDay").textContent=money(riskTrade*rr*trades);el("tradesAllowed").textContent=trades;
+ let completed=0,wins=0,losses=0,totalPnl=0,totalR=0,marginUsed=0,riskUsed=0;
+ for(let i=1;i<=trades;i++){
+  const entry=n("entry"+i),side=el("side"+i).value,result=el("result"+i).value;autoSL(i,entry,side,riskTrade,bp);
+  const sl=n("sl"+i), suggested=entry>0?Math.floor(bp/entry):0, qty=n("qty"+i), l=lev();
+  let tp=0;if(entry>0&&sl>0&&side)tp=side==="BUY"?entry+rr*Math.abs(entry-sl):entry-rr*Math.abs(entry-sl);
+  const exitEl=el("exit"+i);
+  if(result==="SL"&&sl){exitEl.value=sl.toFixed(2);exitEl.dataset.manual="false"}else if(result==="TP"&&tp){exitEl.value=tp.toFixed(2);exitEl.dataset.manual="false"}else if(result==="Open"){exitEl.value="";exitEl.dataset.manual="false"}
+  const exit=n("exit"+i), used=entry*qty/l;
+  marginUsed+=used;
+  let pnl=null,R=null;
+  if(qty>0&&entry>0){
+   if(result==="SL"&&sl)pnl=-Math.abs(entry-sl)*qty;
+   else if(result==="TP"&&tp)pnl=(side==="BUY"?tp-entry:entry-tp)*qty;
+   else if(result==="Manual"&&exit>0)pnl=(side==="BUY"?exit-entry:entry-exit)*qty;
+  }
+  if(pnl!==null){completed++;totalPnl+=pnl;if(pnl>0)wins++;if(pnl<0){losses++;riskUsed+=-pnl}if(sl>0&&entry!==sl)R=pnl/(Math.abs(entry-sl)*qty);if(R!==null)totalR+=R}
+  el("suggested"+i).textContent=suggested?fmt(suggested):"—";el("margin"+i).textContent=qty?money(used):"—";el("margin"+i).className="value auto"+(used>bp?" warn":"");
+  el("tp"+i).textContent=tp?tp.toLocaleString("en-IN",{minimumFractionDigits:2,maximumFractionDigits:2}):"—";
+  el("pnl"+i).textContent=pnl===null?"—":money(pnl);el("pnl"+i).className="value auto "+(pnl>0?"green":pnl<0?"red":"");
+  el("r"+i).textContent=R===null?"—":R.toFixed(2)+"R";
+ }
+ const wr=completed?wins/completed:0;el("completed").textContent=completed;el("wins").textContent=wins;el("losses").textContent=losses;el("winRate").textContent=(wr*100).toFixed(1)+"%";
+ el("todayPnl").textContent=money(totalPnl);el("todayR").textContent=totalR.toFixed(2)+"R";el("marginUsed").textContent=money(marginUsed);el("bpRemaining").textContent=money(Math.max(0,bp-marginUsed));
+ el("riskUsed").textContent=money(riskUsed);el("riskRemaining").textContent=money(Math.max(0,dailyRisk-riskUsed));el("dailyLimit").textContent=money(dailyRisk);el("rrTarget").textContent=money(riskTrade*rr);
+}
+["capitalBase","customLev","maxTrades","riskPct","rr","currency"].forEach(id=>el(id).addEventListener("input",()=>{if(id==="maxTrades")buildRows();calc()}));
+el("leverage").addEventListener("change",()=>{el("customLevField").style.display=el("leverage").value==="custom"?"block":"none";calc()});
+el("date").addEventListener("input",e=>{let v=e.target.value.replace(/\D/g,"").slice(0,8);e.target.value=v.length>4?v.slice(0,2)+"/"+v.slice(2,4)+"/"+v.slice(4):v.length>2?v.slice(0,2)+"/"+v.slice(2):v});
+function saveData(){const count=Math.max(1,Math.min(50,Math.floor(n("maxTrades")||1))),ids=["date","recordName","currency","capitalBase","leverage","customLev","maxTrades","riskPct","rr"];for(let i=1;i<=count;i++)ids.push("stock"+i,"side"+i,"entry"+i,"sl"+i,"qty"+i,"result"+i,"exit"+i);const d={};ids.forEach(id=>{const x=el(id);if(x)d[id]=x.value});for(let i=1;i<=count;i++)d["slManual"+i]=el("sl"+i)?.dataset.manual==="true";localStorage.setItem("ATTD_Margin_Calculator",JSON.stringify(d));alert("Today's MARGIN CALCULATOR data saved in this browser.")}
+function loadData(){const raw=localStorage.getItem("ATTD_Margin_Calculator");if(!raw){alert("No saved data found.");return}const d=JSON.parse(raw);if(d.maxTrades)el("maxTrades").value=d.maxTrades;buildRows();Object.keys(d).forEach(id=>{if(id.startsWith("slManual"))return;const x=el(id);if(x)x.value=id.startsWith("stock")?String(d[id]||"").toUpperCase():d[id]});Object.keys(d).forEach(id=>{if(id.startsWith("slManual")){const i=id.replace("slManual",""),x=el("sl"+i);if(x)x.dataset.manual=d[id]?"true":"false"}});el("customLevField").style.display=el("leverage").value==="custom"?"block":"none";calc()}
+function resetAll(){if(!confirm("Reset today's margin calculator?"))return;document.querySelectorAll("input").forEach(x=>x.value="");el("date").value=today();el("capitalBase").value=100000;el("leverage").value="4";el("customLev").value=4;el("maxTrades").value=1;el("riskPct").value=1;el("rr").value=5;el("recordName").value="";el("customLevField").style.display="none";buildRows();calc()}
+buildRows();calc();
+</script>
+</body></html>
