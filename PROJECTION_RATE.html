@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PROJECTION RATE</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f5f7fb;font-family:Arial,sans-serif;color:#172033}.wrap{max-width:1100px;margin:24px auto;padding:0 16px}h1{margin:0;color:#17365d;font-size:30px}.sub{color:#687386;margin:5px 0 22px}.title{background:#2864d7;color:white;font-weight:700;padding:10px 14px;border-radius:7px 7px 0 0;margin-top:18px}.box{background:white;border:1px solid #d9e2f3;border-top:0;padding:15px}.grid,.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.field label{display:block;font-size:12px;font-weight:700;color:#687386;margin-bottom:5px}input,select{width:100%;height:40px;border:1px solid #cbd5e1;border-radius:6px;padding:7px 9px;font-size:15px}.card{border:1px solid #d9e2f3;border-radius:7px;padding:15px}.period{font-size:12px;font-weight:700;color:#687386}.big{font-size:23px;font-weight:800;margin-top:7px;color:#16833b}.small{font-size:12px;color:#687386;margin-top:5px}.note{font-size:12px;color:#687386;line-height:1.5}.actions{margin:16px 0;display:flex;gap:10px}button{border:0;border-radius:6px;padding:10px 15px;font-weight:700}.primary{background:#2864d7;color:#fff}.secondary{background:#e8edf5;color:#17365d}@media(max-width:800px){.grid,.cards{grid-template-columns:repeat(2,1fr)}}@media(max-width:520px){.grid,.cards{grid-template-columns:1fr}.wrap{margin:12px auto;padding:0 9px}}@page{size:A4 landscape;margin:10mm}@media print{.wrap{max-width:none;margin:0;padding:0}h1{font-size:22px}.sub{font-size:9px;margin:3px 0 7px}.title{font-size:11px;padding:6px 8px}.box{padding:8px}.field label{font-size:8px}input,select{height:27px;font-size:9px}.card{padding:9px}.big{font-size:16px}.period,.small,.note{font-size:8px}.actions{display:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>PROJECTION RATE</h1>
+<div class="sub">Adarsh Technical Trading Desk (ATTD) • Capital → Risk → R:R → Potential Growth</div>
+
+<div class="title">1 | TRADING PLAN</div>
+<div class="box"><div class="grid">
+<div class="field"><label>Trading Capital</label><input id="capital" type="number" value="100000" min="0"></div>
+<div class="field"><label>Leverage / Margin</label><select id="lev"><option>1</option><option>2</option><option>3</option><option selected>4</option><option>5</option><option>6</option><option>8</option><option>10</option></select></div>
+<div class="field"><label>Max Loss / Day</label><input id="loss" type="number" value="1000" min="0"></div>
+<div class="field"><label>Max Trades / Day</label><input id="trades" type="number" value="1" min="1" max="50"></div>
+<div class="field"><label>Risk : Reward</label><input id="rr" type="number" value="5" min=".1" step=".1"></div>
+<div class="field"><label>Trading Days / Week</label><input id="week" type="number" value="5" min="1" max="7"></div>
+<div class="field"><label>Trading Days / Month</label><input id="month" type="number" value="22" min="1" max="31"></div>
+<div class="field"><label>Trading Days / Year</label><input id="year" type="number" value="250" min="1" max="366"></div>
+</div></div>
+
+<div class="title">2 | DAILY ENGINE</div>
+<div class="box"><div class="cards">
+<div class="card"><div class="period">BUYING POWER</div><div class="big" id="bp">₹0</div><div class="small">Capital × Leverage</div></div>
+<div class="card"><div class="period">1R / TRADE</div><div class="big" id="r">₹0</div><div class="small">Max Loss / Day ÷ Trades</div></div>
+<div class="card"><div class="period">TARGET / TRADE</div><div class="big" id="target">₹0</div><div class="small">1R × R:R</div></div>
+<div class="card"><div class="period">TARGET / DAY</div><div class="big" id="day">₹0</div><div class="small">Target / Trade × Trades</div></div>
+</div></div>
+
+<div class="title">3 | PROJECTION</div>
+<div class="box"><div class="cards">
+<div class="card"><div class="period">DAILY</div><div class="big" id="pd">₹0</div><div class="small" id="cd">Capital: ₹0</div></div>
+<div class="card"><div class="period">WEEKLY</div><div class="big" id="pw">₹0</div><div class="small" id="cw">Capital: ₹0</div></div>
+<div class="card"><div class="period">MONTHLY</div><div class="big" id="pm">₹0</div><div class="small" id="cm">Capital: ₹0</div></div>
+<div class="card"><div class="period">YEARLY</div><div class="big" id="py">₹0</div><div class="small" id="cy">Capital: ₹0</div></div>
+</div>
+<p class="note"><b>Projection:</b> mathematical planning only. It assumes the full planned daily target is achieved on every trading day. It is not a return guarantee and does not account for losing days, brokerage, taxes, slippage or changing market conditions.</p></div>
+
+<div class="actions"><button class="primary" onclick="print()">Print / Save PDF</button><button class="secondary" onclick="save()">Save Plan</button><button class="secondary" onclick="load()">Load Plan</button><button class="secondary" onclick="resetAll()">Reset</button></div>
+</div>
+<script>
+const $=id=>document.getElementById(id),n=id=>Number($(id).value)||0,m=x=>"₹"+Math.round(x).toLocaleString("en-IN");
+function calc(){
+let c=n("capital"),l=n("lev"),loss=n("loss"),t=Math.max(1,n("trades")),rr=Math.max(.1,n("rr")),r=loss/t,target=r*rr,day=target*t;
+$("bp").textContent=m(c*l);$("r").textContent=m(r);$("target").textContent=m(target);$("day").textContent=m(day);
+[["pd","cd",1],["pw","cw",n("week")],["pm","cm",n("month")],["py","cy",n("year")]].forEach(x=>{$(x[0]).textContent=m(day*x[2]);$(x[1]).textContent="Projected Capital: "+m(c+day*x[2])});
+}
+["capital","lev","loss","trades","rr","week","month","year"].forEach(id=>$(id).addEventListener("input",calc));
+function save(){let d={};["capital","lev","loss","trades","rr","week","month","year"].forEach(id=>d[id]=$(id).value);localStorage.setItem("ATTD_Projection_Rate",JSON.stringify(d));alert("Plan saved.")}
+function load(){let d=JSON.parse(localStorage.getItem("ATTD_Projection_Rate")||"null");if(!d)return alert("No saved plan.");Object.keys(d).forEach(id=>$(id).value=d[id]);calc()}
+function resetAll(){["capital","loss","trades","week","month","year"].forEach((id,i)=>$(id).value=[100000,1000,1,5,22,250][i]);$("lev").value=4;$("rr").value=5;calc()}
+calc();
+</script>
+</body></html>
