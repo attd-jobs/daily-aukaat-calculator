@@ -1,0 +1,310 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="apple-touch-icon" href="./journal-icon-192.png">
+<title>ATTD TRADING JOURNAL V8</title>
+<style>
+:root{--navy:#17365d;--blue:#2864d7;--gold:#c99a2e;--green:#16833b;--red:#c62828;--bg:#f5f7fb;--line:#d9e2f3;--muted:#687386}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:Arial,Helvetica,sans-serif;color:#172033}.wrap{max-width:1500px;margin:20px auto;padding:0 14px}
+h1{margin:0;color:var(--navy);font-size:28px}.sub{color:var(--muted);margin:5px 0 18px}.section{margin:15px 0}.title{color:#fff;font-size:17px;font-weight:800;padding:11px 15px;border-radius:7px 7px 0 0}.blue{background:var(--blue)}.gold{background:var(--gold)}.green{background:var(--green)}.navy{background:var(--navy)}
+.box{background:#fff;border:1px solid var(--line);border-top:0;padding:13px}.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:11px}.field label{display:block;color:var(--muted);font-size:12px;font-weight:800;margin-bottom:5px}
+input,select,textarea{width:100%;border:1px solid #cbd5e1;border-radius:6px;background:#fff;padding:8px;font-size:14px}input,select{height:38px}textarea{min-height:70px}.full{grid-column:1/-1}
+.chips{display:flex;flex-wrap:wrap;gap:7px}.chips input{display:none}.chip{display:inline-block;border:1px solid #cbd5e1;border-radius:18px;padding:7px 11px;font-size:12px;font-weight:800;cursor:pointer}.chips input:checked+.chip{background:#e7efff;border-color:var(--blue);color:var(--navy)}.confirm input:checked+.chip{background:#fff5d8;border-color:var(--gold);color:#735300}
+.exec-table{overflow:auto}.exec-table table{min-width:1450px}.exec-table th{background:var(--navy);color:#fff;padding:9px 7px;font-size:11px;white-space:nowrap}.exec-table td{padding:5px}.exec-table input,.exec-table select{height:37px}.auto{font-size:9px;color:var(--green);font-weight:900}
+.note{font-size:11px;color:var(--muted);line-height:1.5;margin-top:9px}.actions{display:flex;gap:9px;flex-wrap:wrap;margin:16px 0}button{border:0;border-radius:6px;padding:10px 14px;font-weight:800;cursor:pointer}.primary{background:var(--blue);color:#fff}.secondary{background:#e8edf5;color:var(--navy)}.danger{background:#fbe4e4;color:var(--red)}
+.score{display:grid;grid-template-columns:repeat(6,1fr);gap:9px}.score .item{background:#fff;border:1px solid var(--line);border-radius:6px;padding:10px;display:flex;justify-content:space-between}.label{font-size:11px;font-weight:800;color:var(--muted)}.num{font-weight:900}
+.log-wrap{overflow:auto;background:#fff;border:1px solid var(--line)}.log{min-width:1500px;border-collapse:collapse;width:100%}.log th{background:var(--navy);color:#fff;padding:8px;font-size:10px;white-space:nowrap}.log td{padding:6px;border-bottom:1px solid var(--line);text-align:center;font-size:11px}.tag{display:inline-block;padding:3px 6px;border-radius:10px;font-size:9px;font-weight:800;margin:1px}.sel{background:#e7efff;color:#17365d}.conf{background:#fff5d8;color:#735300}.setupTag{background:#e8f5e9;color:#17652e}.win{color:var(--green);font-weight:900}.loss{color:var(--red);font-weight:900}.footer{text-align:right;color:var(--muted);font-size:10px;padding:12px 0}
+.print-record{display:none}@page{size:A4 landscape;margin:8mm}@media print{body{background:#fff;-webkit-print-color-adjust:exact;print-color-adjust:exact}.wrap{max-width:none;margin:0;padding:0}.form-section,.score-section,.actions,.log-tools,.footer{display:none!important}.log-section{display:block!important}.log-section .title{display:none!important}.log-wrap{display:none!important}.print-record{display:block!important}.print-record .print-log{display:table!important}.print-record .print-log th,.print-record .print-log td{font-size:7px}h1{font-size:20px}.sub{font-size:9px;margin:3px 0 8px}.print-record h2{color:var(--navy);font-size:18px;border-bottom:2px solid var(--navy);padding-bottom:5px}.print-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}.pi{border:1px solid #bbb;padding:6px;font-size:10px}.pi b{display:block;font-size:8px;color:#687386;margin-bottom:3px}}
+@media(max-width:900px){.grid{grid-template-columns:repeat(2,1fr)}.score{grid-template-columns:repeat(3,1fr)}}@media(max-width:600px){.grid{grid-template-columns:1fr}.score{grid-template-columns:1fr}.wrap{padding:0 8px;margin:10px auto}h1{font-size:23px}}
+
+.log-tools{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:#fff;border:1px solid var(--line);border-top:0;padding:8px 10px;color:var(--muted);font-size:11px;font-weight:700}
+.log-tools span{margin-right:auto}
+.detail-col{display:none}
+.show-details .detail-col{display:table-cell}
+.print-log{width:100%;border-collapse:collapse;font-size:7px;table-layout:auto}
+.print-log th{background:var(--navy);color:#fff;padding:5px 3px;white-space:nowrap}
+.print-log td{border:1px solid #aaa;padding:4px 3px;text-align:center;white-space:nowrap}
+.print-meta{font-size:9px;color:#555;margin:0 0 7px}
+
+<style>.calc-status{margin-top:8px;padding:8px 10px;background:#eef7f0;border:1px solid #b8d9c0;border-radius:6px;color:#17652e;font-size:11px;font-weight:700}</style></style>
+<style>
+.print-chips .chip{font-size:11px}
+.print-chips input:checked+.chip{background:#e8f5e9;border-color:#16833b;color:#145c2a}
+@media print{.print-settings{display:none!important}.print-log th,.print-log td{font-size:7px!important;padding:4px 3px!important}}
+</style>
+</head><body>
+<div class="wrap">
+<h1>ATTD TRADING JOURNAL</h1><div class="sub">Selection → Setup → Execution → Journal • Smart Calculations • Ideas by Adarsh Srivastava</div>
+
+<div class="form-section section"><div class="title blue">🔵 1 | SELECTION — FROM SELECTION DESK</div><div class="box"><div class="grid">
+<div class="field"><label>Date</label><input id="date" type="date"></div>
+<div class="field"><label>Stock / Index</label><input id="stock" placeholder="Already-selected stock / index"></div>
+<div class="field"><label>Selection Notes</label><input id="selectionNotes"></div>
+<div class="field full"><label>Selection Tags — multiple allowed</label><div class="chips">
+<label><input type="checkbox" name="selection" value="CTC"><span class="chip">CTC</span></label><label><input type="checkbox" name="selection" value="S9"><span class="chip">S9</span></label><label><input type="checkbox" name="selection" value="TC"><span class="chip">TC</span></label><label><input type="checkbox" name="selection" value="S7"><span class="chip">S7</span></label><label><input type="checkbox" name="selection" value="S8"><span class="chip">S8</span></label><label><input type="checkbox" name="selection" value="Cluster"><span class="chip">Cluster</span></label>
+</div></div></div></div></div>
+
+<div class="form-section section"><div class="title gold">🟡 2 | SETUP — MANUAL</div><div class="box"><div class="grid">
+<div class="field"><label>Setup</label><select id="setup"><option value="">Select / enter manually</option><option>Breakout</option><option>Breakdown</option><option>Reversal</option><option>Pullback</option><option>Continuation</option><option>Range</option><option>Other</option></select></div>
+<div class="field"><label>Setup Name / Custom</label><input id="setupCustom"></div>
+<div class="field"><label>Setup Time</label><input id="setupTime" type="time"></div>
+<div class="field"><label>Setup Quality</label><select id="setupQuality"><option>—</option><option>A+</option><option>A</option><option>B</option><option>C</option></select></div>
+<div class="field full"><label>Confirmation / Confluence — multiple allowed</label><div class="chips confirm">
+<label><input type="checkbox" name="confirm" value="Results"><span class="chip">Results</span></label><label><input type="checkbox" name="confirm" value="News"><span class="chip">News</span></label><label><input type="checkbox" name="confirm" value="Pre-Market"><span class="chip">Pre-Market</span></label><label><input type="checkbox" name="confirm" value="BB Reject"><span class="chip">BB Reject</span></label><label><input type="checkbox" name="confirm" value="Hammer"><span class="chip">Hammer</span></label><label><input type="checkbox" name="confirm" value="ATH"><span class="chip">ATH</span></label><label><input type="checkbox" name="confirm" value="ATL"><span class="chip">ATL</span></label><label><input type="checkbox" name="confirm" value="SS"><span class="chip">SS</span></label><label><input type="checkbox" name="confirm" value="SR"><span class="chip">SR</span></label><label><input type="checkbox" name="confirm" value="Sectors"><span class="chip">Sectors</span></label><label><input type="checkbox" name="confirm" value="OI-Spurts"><span class="chip">OI-Spurts</span></label>
+</div></div>
+<div class="field full"><label>Setup Notes — manual</label><textarea id="setupNotes"></textarea></div>
+</div></div></div>
+
+<div class="form-section section"><div class="title green">🟢 3 | EXECUTION — SMART CALCULATION, EDITABLE</div><div class="box">
+<div class="exec-table"><table><thead><tr>
+<th>Side</th><th>Entry Time</th><th>Entry Price</th><th>Currency</th><th>Risk / Trade</th><th>Initial SL %</th><th>SL <span class="auto">AUTO</span></th><th>R:R</th><th>Target <span class="auto">AUTO</span></th><th>Qty / Lots <span class="auto">AUTO</span></th><th>Exit Time</th><th>Exit Price</th><th>Result</th><th>P&L ₹ <span class="auto">AUTO</span></th><th>Actual R:R</th>
+</tr></thead><tbody><tr>
+<td><select id="side"><option>BUY</option><option>SELL</option></select></td>
+<td><input id="entryTime" type="time"></td>
+<td><input id="entry" type="number" step="any" oninput="manual.sl=false;manual.qty=false;manual.target=false;calculate()"></td>
+<td><select id="currency"><option value="₹">₹ INR</option><option value="$">$ USD</option><option value="€">€ EUR</option><option value="£">£ GBP</option><option value="¥">¥ JPY</option><option value="د.إ">د.إ AED</option><option value="S$">S$ SGD</option></select></td>
+<td><input id="riskTrade" type="number" step="any" oninput="manual.qty=false;calculate()"></td>
+<td><input id="slPct" type="number" value="1" min="0.01" step="0.01" oninput="manual.sl=false;manual.qty=false;manual.target=false;calculate()"></td>
+<td><input id="sl" type="number" step="any" oninput="manual.sl=true;manual.qty=false;manual.target=false;calculate()"></td>
+<td><input id="rr" type="number" value="5" min="0.1" step="0.1" oninput="manual.target=false;calculate()"></td>
+<td><input id="target" type="number" step="any" oninput="manual.target=true"></td>
+<td><input id="qty" type="number" step="1" oninput="manual.qty=true;calculate()"></td>
+<td><input id="exitTime" type="time"></td>
+<td><input id="exit" type="number" step="any" oninput="manual.pnl=false;calculate()"></td>
+<td><select id="result"><option>OPEN</option><option>WIN</option><option>LOSS</option><option>BE</option></select></td>
+<td><input id="pnl" type="number" step="any" oninput="manual.pnl=true"></td>
+<td><input id="actualRR" readonly></td>
+</tr></tbody></table></div>
+<div class="calc-status" id="calcStatus">Auto-calculation ready — enter Entry Price.</div><div class="note"><b>Calculation logic:</b> Entry is manual. Initial SL = Entry ± selected SL%. Qty = Risk / SL distance. Target = SL distance × R:R from Entry. Exit is manual. P&amp;L = Entry-to-Exit × Qty. SL, Target, Qty and P&amp;L are editable. If you edit one of these, it is respected until the inputs that drive it are changed. Actual R:R = actual reward ÷ actual risk.</div>
+</div></div>
+
+<div class="form-section section"><div class="title navy">⚪ 4 | JOURNAL — REVIEW</div><div class="box"><div class="grid">
+<div class="field"><label>What went right?</label><textarea id="right"></textarea></div><div class="field"><label>What went wrong?</label><textarea id="wrong"></textarea></div><div class="field"><label>Mistake</label><textarea id="mistake"></textarea></div><div class="field"><label>Emotion</label><textarea id="emotion"></textarea></div>
+<div class="field"><label>Discipline</label><select id="discipline"><option>—</option><option>Followed Plan</option><option>Minor Deviation</option><option>Major Deviation</option></select></div><div class="field"><label>Lesson Learned</label><textarea id="lesson"></textarea></div><div class="field"><label>Next Improvement</label><textarea id="improvement"></textarea></div><div class="field"><label>Chart / Screenshot Link</label><input id="chart"></div><div class="field full"><label>Additional Notes</label><textarea id="notes"></textarea></div>
+</div></div></div>
+
+<div class="score-section section"><div class="title navy">TODAY'S JOURNAL SCORECARD</div><div class="box"><div class="score">
+<div class="item"><span class="label">Trades</span><span class="num" id="sTrades">0</span></div><div class="item"><span class="label">Wins</span><span class="num" id="sWins">0</span></div><div class="item"><span class="label">Losses</span><span class="num" id="sLosses">0</span></div><div class="item"><span class="label">Win Rate</span><span class="num" id="sWinRate">0%</span></div><div class="item"><span class="label">Total P&amp;L</span><span class="num" id="sPnl">0</span></div><div class="item"><span class="label">Average R:R</span><span class="num" id="sR">0:1</span></div>
+</div></div></div>
+
+<div class="actions"><button class="primary" onclick="calculate()">↻ Calculate / Refresh</button><button class="primary" onclick="addTrade()">Add Trade to Journal</button><button class="secondary" onclick="saveData()">Save Journal</button><button class="secondary" onclick="loadData()">Load Journal</button><button class="primary" onclick="window.print()">Print / Save PDF</button><button class="danger" onclick="resetForm()">Clear Form</button><button class="danger" onclick="clearLog()">Clear Journal Log</button></div>
+
+
+<div class="form-section section print-settings">
+<div class="title navy">🖨️ PRINT COLUMNS — SELECT WHAT YOU WANT</div>
+<div class="box">
+<div class="chips print-chips">
+<label><input type="checkbox" name="pc" value="date" checked><span class="chip">Date</span></label>
+<label><input type="checkbox" name="pc" value="stock" checked><span class="chip">Stock / Index</span></label>
+<label><input type="checkbox" name="pc" value="selection" checked><span class="chip">Selection</span></label>
+<label><input type="checkbox" name="pc" value="setup" checked><span class="chip">Setup</span></label>
+<label><input type="checkbox" name="pc" value="confirm"><span class="chip">Confirmation</span></label>
+<label><input type="checkbox" name="pc" value="side" checked><span class="chip">BUY / SELL</span></label>
+<label><input type="checkbox" name="pc" value="entryTime"><span class="chip">Entry Time</span></label>
+<label><input type="checkbox" name="pc" value="entry" checked><span class="chip">Entry</span></label>
+<label><input type="checkbox" name="pc" value="sl" checked><span class="chip">SL</span></label>
+<label><input type="checkbox" name="pc" value="target"><span class="chip">Target</span></label>
+<label><input type="checkbox" name="pc" value="qty"><span class="chip">Qty / Lots</span></label>
+<label><input type="checkbox" name="pc" value="exitTime"><span class="chip">Exit Time</span></label>
+<label><input type="checkbox" name="pc" value="exit" checked><span class="chip">Exit</span></label>
+<label><input type="checkbox" name="pc" value="result" checked><span class="chip">Result</span></label>
+<label><input type="checkbox" name="pc" value="pnl" checked><span class="chip">P&amp;L</span></label>
+<label><input type="checkbox" name="pc" value="actualRR" checked><span class="chip">Actual R:R</span></label>
+</div>
+<div class="note">The log can contain every detail. The printout can be kept intentionally compact by selecting only the columns you need.</div>
+</div></div>
+<div class="log-section section">
+<div class="title navy">TRADE JOURNAL LOG — EXCEL VIEW</div>
+<div class="log-tools">
+  <span>Multiple trades / stocks can be logged for the day.</span>
+  <button class="secondary" onclick="toggleDetails()">Show / Hide Notes &amp; Review</button>
+  <button class="primary" onclick="printLog()">Print / Save PDF — Log to Actual R:R</button>
+</div>
+<div class="log-wrap"><table class="log"><thead><tr>
+<th>#</th><th>Date</th><th>Stock / Index</th><th>Selection</th><th>Setup</th><th>Confirmation</th><th>Side</th><th>Entry Time</th><th>Entry</th><th>SL</th><th>Target</th><th>Qty/Lots</th><th>Exit Time</th><th>Exit</th><th>Result</th><th>P&amp;L</th><th>Actual R:R</th><th class="detail-col">Lesson</th><th class="detail-col">Notes</th>
+</tr></thead><tbody id="logBody"></tbody></table></div></div>
+
+<div class="print-record" id="printRecord">
+<h2>ATTD TRADING JOURNAL — TRADE LOG</h2>
+<div class="print-meta" id="printMeta"></div>
+<table class="print-log"><thead id="printLogHead"><tr><th>#</th><th>Date</th></tr></thead><tbody id="printLogBody"></tbody></table>
+</div>
+<div class="footer">Ideas by Adarsh Srivastava • ATTD Trading Journal V8</div>
+</div>
+
+<script>
+const $=id=>document.getElementById(id);
+const vals=n=>[...document.querySelectorAll('input[name="'+n+'"]:checked')].map(x=>x.value);
+const today=()=>new Date().toISOString().slice(0,10);
+let manual={sl:false,target:false,qty:false,pnl:false};
+
+$("date").value=today();
+
+function N(id){const e=$(id);return e&&e.value!==""?Number(e.value):NaN}
+function setN(id,v){if(Number.isFinite(v))$(id).value=Number(v.toFixed(4))}
+function caps(){if($("stock"))$("stock").value=$("stock").value.toUpperCase()}
+function cur(){return ($("currency")&&$("currency").value)||"₹"}
+
+function calculate(){
+  caps();
+  const entry=N("entry"), pct=N("slPct")||1, risk=N("riskTrade"), rr=N("rr")||5, side=$("side").value;
+  if(!Number.isFinite(entry)||entry<=0){
+    if($("calcStatus"))$("calcStatus").textContent="Auto-calculation ready — enter Entry Price.";
+    return;
+  }
+
+  // Always provide an initial SL when Entry is present.
+  if(!manual.sl || $("sl").value===""){
+    const sl=side==="BUY"?entry*(1-pct/100):entry*(1+pct/100);
+    setN("sl",sl);
+  }
+  const sl=N("sl"), distance=Math.abs(entry-sl);
+  if(!Number.isFinite(distance)||distance<=0)return;
+
+  // Quantity uses the actual SL distance. If risk is supplied, calculate whole units/lots.
+  if(!manual.qty || $("qty").value===""){
+    if(Number.isFinite(risk)&&risk>0){
+      const q=Math.floor(risk/distance);
+      setN("qty",Math.max(1,q));
+    }
+  }
+
+  // Target uses actual SL distance and selected R:R.
+  if(!manual.target || $("target").value===""){
+    setN("target",side==="BUY"?entry+distance*rr:entry-distance*rr);
+  }
+
+  // P&L follows actual Exit and Qty unless manually edited.
+  const exit=N("exit"),qty=N("qty");
+  if(Number.isFinite(exit)&&Number.isFinite(qty)&&qty>0&&!manual.pnl){
+    setN("pnl",side==="BUY"?(exit-entry)*qty:(entry-exit)*qty);
+  }
+
+  if(Number.isFinite(exit)){
+    $("actualRR").value=(Math.abs(exit-entry)/distance).toFixed(2)+":1";
+  }else $("actualRR").value="";
+  if($("calcStatus"))$("calcStatus").textContent="Auto-calculated from Entry, SL %, Risk / Trade and R:R. Editable fields are respected.";
+}
+
+function resetManual(k){manual[k]=false}
+
+function setupAutoTime(){
+  if(!$("setupTime").value)$("setupTime").value=$("entryTime").value;
+}
+
+function collect(){
+ return {
+  date:$("date").value,stock:$("stock").value.toUpperCase(),currency:cur(),
+  selection:vals("selection"),selectionNotes:$("selectionNotes").value,
+  setup:$("setupCustom").value.trim()||$("setup").value||"—",
+  setupTime:$("setupTime").value,setupQuality:$("setupQuality").value,
+  confirm:vals("confirm"),setupNotes:$("setupNotes").value,
+  side:$("side").value,entryTime:$("entryTime").value,entry:$("entry").value,
+  riskTrade:$("riskTrade").value,slPct:$("slPct").value,sl:$("sl").value,rr:$("rr").value,
+  target:$("target").value,qty:$("qty").value,exitTime:$("exitTime").value,exit:$("exit").value,
+  result:$("result").value,pnl:$("pnl").value,actualRR:$("actualRR").value,
+  right:$("right").value,wrong:$("wrong").value,mistake:$("mistake").value,
+  emotion:$("emotion").value,discipline:$("discipline").value,lesson:$("lesson").value,
+  improvement:$("improvement").value,chart:$("chart").value,notes:$("notes").value
+ };
+}
+function esc(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]))}
+function tags(a,c){return(a||[]).map(x=>`<span class="tag ${c}">${esc(x)}</span>`).join("")||"—"}
+
+function addTrade(){
+ calculate();
+ const d=collect();
+ if(!d.stock){alert("Enter the already-selected Stock / Index.");return}
+ const log=JSON.parse(localStorage.getItem("ATTD_Journal_V7_Log")||"[]");
+ log.push(d);localStorage.setItem("ATTD_Journal_V7_Log",JSON.stringify(log));
+ renderLog();score();updatePrintLog();
+ alert("Trade added to Journal.");
+}
+
+function renderLog(){
+ const log=JSON.parse(localStorage.getItem("ATTD_Journal_V7_Log")||"[]"),b=$("logBody");b.innerHTML="";
+ log.forEach((d,i)=>{
+  const c=d.result==="WIN"?"win":d.result==="LOSS"?"loss":"",sym=d.currency||"₹";
+  b.insertAdjacentHTML("beforeend",`<tr>
+  <td>${i+1}</td><td>${esc(d.date)}</td><td><b>${esc(d.stock)}</b></td><td>${tags(d.selection,"sel")}</td>
+  <td><span class="tag setupTag">${esc(d.setup)}</span></td><td>${tags(d.confirm,"conf")}</td><td>${esc(d.side)}</td>
+  <td>${esc(d.entryTime)}</td><td>${esc(d.entry)}</td><td>${esc(d.sl)}</td><td>${esc(d.target)}</td><td>${esc(d.qty)}</td>
+  <td>${esc(d.exitTime)}</td><td>${esc(d.exit)}</td><td class="${c}">${esc(d.result)}</td>
+  <td>${d.pnl!==""?sym+esc(d.pnl):""}</td><td>${esc(d.actualRR)}</td>
+  <td class="detail-col">${esc(d.lesson)}</td><td class="detail-col">${esc(d.notes)}</td></tr>`);
+ });
+}
+
+function score(){
+ const log=JSON.parse(localStorage.getItem("ATTD_Journal_V7_Log")||"[]");
+ const d=log.filter(x=>x.result!=="OPEN"),w=d.filter(x=>x.result==="WIN"),l=d.filter(x=>x.result==="LOSS");
+ const p=d.reduce((a,x)=>a+(Number(x.pnl)||0),0),r=d.map(x=>parseFloat(x.actualRR)).filter(Number.isFinite);
+ $("sTrades").textContent=d.length;$("sWins").textContent=w.length;$("sLosses").textContent=l.length;
+ $("sWinRate").textContent=(d.length?w.length/d.length*100:0).toFixed(1)+"%";
+ $("sPnl").textContent=(d.length?(d[0].currency||"₹"):"₹")+p.toLocaleString("en-IN",{maximumFractionDigits:2});
+ $("sR").textContent=(r.length?r.reduce((a,b)=>a+b,0)/r.length:0).toFixed(2)+":1";
+}
+
+function saveData(){localStorage.setItem("ATTD_Journal_V7_Form",JSON.stringify(collect()));alert("Journal form saved in this browser.")}
+function loadData(){
+ const d=JSON.parse(localStorage.getItem("ATTD_Journal_V7_Form")||"null");
+ if(!d){alert("No saved journal form.");return}
+ Object.keys(d).forEach(k=>{const e=$(k);if(e&&!Array.isArray(d[k]))e.value=d[k]});
+ document.querySelectorAll('input[name="selection"]').forEach(x=>x.checked=(d.selection||[]).includes(x.value));
+ document.querySelectorAll('input[name="confirm"]').forEach(x=>x.checked=(d.confirm||[]).includes(x.value));
+ $("stock").value=(d.stock||"").toUpperCase(); $("currency").value=d.currency||"₹";
+ if($("currencyLabel"))$("currencyLabel").textContent=cur();manual={sl:false,target:false,qty:false,pnl:false};calculate();renderLog();score();updatePrintLog();
+}
+function resetForm(){
+ if(!confirm("Clear the current journal form?"))return;
+ document.querySelectorAll("input,textarea").forEach(e=>{if(e.type==="checkbox")e.checked=false;else e.value=""});
+ $("date").value=today();$("side").value="BUY";$("rr").value=5;$("slPct").value=1;$("result").value="OPEN";
+ $("setup").value="";$("setupQuality").value="—";$("discipline").value="—";$("currency").value="₹";
+ if($("currencyLabel"))$("currencyLabel").textContent="₹";manual={sl:false,target:false,qty:false,pnl:false};$("actualRR").value="";
+}
+function clearLog(){
+ if(!confirm("Clear the entire Journal Log?"))return;
+ localStorage.removeItem("ATTD_Journal_V7_Log");renderLog();score();updatePrintLog();
+}
+function toggleDetails(){document.body.classList.toggle("show-details")}
+function selectedPrintCols(){return vals("pc")}
+function updatePrintLog(){
+ const log=JSON.parse(localStorage.getItem("ATTD_Journal_V7_Log")||"[]");
+ const cols=[
+  ["date","Date"],["stock","Stock / Index"],["selection","Selection"],["setup","Setup"],["confirm","Confirmation"],
+  ["side","Side"],["entryTime","Entry Time"],["entry","Entry"],["sl","SL"],["target","Target"],["qty","Qty/Lots"],
+  ["exitTime","Exit Time"],["exit","Exit"],["result","Result"],["pnl","P&L"],["actualRR","Actual R:R"]
+ ];
+ const chosen=selectedPrintCols();
+ const use=cols.filter(c=>chosen.includes(c[0]));
+ $("printLogBody").innerHTML=log.map((d,i)=>`<tr>${use.map(([k])=>{
+   let v=d[k]??"";
+   if(Array.isArray(v))v=v.join(", ");
+   if(k==="pnl"&&v!=="")v=(d.currency||"₹")+v;
+   return `<td>${esc(k==="stock"?String(v).toUpperCase():v)}</td>`;
+ }).join("")}</tr>`).join("");
+ $("printLogHead").innerHTML=`<tr><th>#</th>${use.map(c=>`<th>${esc(c[1])}</th>`).join("")}</tr>`;
+ $("printMeta").textContent=`Trades: ${log.length}  •  Date(s): ${[...new Set(log.map(x=>x.date).filter(Boolean))].join(", ")||"—"}`;
+}
+function printLog(){updatePrintLog();window.print()}
+
+$("stock").addEventListener("input",caps);
+$("stock").addEventListener("blur",caps);
+if($("currency"))$("currency").addEventListener("change",()=>{if($("currencyLabel"))if($("currencyLabel"))$("currencyLabel").textContent=cur();score()});
+$("entry").addEventListener("input",()=>{manual.sl=false;manual.qty=false;manual.target=false;calculate()});
+$("side").addEventListener("change",()=>{manual.sl=false;manual.target=false;calculate()});
+$("slPct").addEventListener("input",()=>{manual.sl=false;manual.qty=false;manual.target=false;calculate()});
+$("riskTrade").addEventListener("input",()=>{manual.qty=false;calculate()});
+$("rr").addEventListener("input",()=>{manual.target=false;calculate()});
+$("sl").addEventListener("input",()=>{manual.sl=true;manual.qty=false;manual.target=false;calculate()});
+$("target").addEventListener("input",()=>manual.target=true);
+$("qty").addEventListener("input",()=>{manual.qty=true;calculate()});
+$("exit").addEventListener("input",()=>{manual.pnl=false;calculate()});
+$("pnl").addEventListener("input",()=>manual.pnl=true);
+$("entryTime").addEventListener("input",setupAutoTime);
+document.querySelectorAll('input[name="pc"]').forEach(x=>x.addEventListener("change",updatePrintLog));
+
+renderLog();score();updatePrintLog();
+// Calculate once on load so a loaded/current Entry immediately gets calculated fields.
+calculate();
+</script></body></html>
