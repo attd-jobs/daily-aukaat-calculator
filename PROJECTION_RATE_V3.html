@@ -1,0 +1,337 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="apple-touch-icon" href="./projection-icon-192.png">
+<title>PROJECTION RATE</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#f5f7fb;font-family:Arial,sans-serif;color:#172033}
+.wrap{max-width:1150px;margin:22px auto;padding:0 14px}
+h1{margin:0;color:#17365d;font-size:30px}
+.sub{color:#687386;margin:5px 0 18px}
+.title{background:#2864d7;color:#fff;font-weight:700;padding:10px 14px;border-radius:7px 7px 0 0;margin-top:16px}
+.box{background:#fff;border:1px solid #d9e2f3;border-top:0;padding:14px}
+.grid,.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.field label{display:block;font-size:12px;font-weight:700;color:#687386;margin-bottom:5px}
+input,select{width:100%;height:40px;border:1px solid #cbd5e1;border-radius:6px;padding:7px 9px;font-size:15px;background:#fff}
+.card{border:1px solid #d9e2f3;border-radius:7px;padding:13px}
+.period{font-size:12px;font-weight:700;color:#687386}
+.big{font-size:22px;font-weight:800;margin-top:6px;color:#16833b}
+.small{font-size:12px;color:#687386;margin-top:4px;line-height:1.35}
+.note{font-size:12px;color:#687386;line-height:1.5}
+.edge{font-weight:700}
+.actions{margin:16px 0;display:flex;gap:10px;flex-wrap:wrap}
+button{border:0;border-radius:6px;padding:10px 15px;font-weight:700;cursor:pointer}
+.primary{background:#2864d7;color:#fff}.secondary{background:#e8edf5;color:#17365d}
+.warning{background:#fff5d6;border:1px solid #f0d36a;border-radius:8px;padding:12px 14px;margin-top:12px}
+.warning b{color:#8a5a00}
+.reality{border:1px solid #cbd5e1;border-radius:8px;padding:15px;background:#fbfcff}
+.reality .headline{font-size:20px;font-weight:800;color:#17365d}
+.reality .message{font-size:15px;font-weight:700;margin-top:7px;line-height:1.4}
+.reality .submsg{font-size:12px;color:#687386;margin-top:7px;line-height:1.5}
+.goalgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.goalcard{border:1px solid #d9e2f3;border-radius:7px;padding:13px}
+.goalcard .glabel{font-size:11px;font-weight:700;color:#687386}
+.goalcard .gval{font-size:20px;font-weight:800;color:#17365d;margin-top:5px}
+table{width:100%;border-collapse:collapse;font-size:12px}
+th,td{padding:8px;border-bottom:1px solid #e1e6ef;text-align:left}
+th{color:#687386}
+@media(max-width:850px){.grid,.cards{grid-template-columns:repeat(2,1fr)}.goalgrid{grid-template-columns:1fr 1fr}}
+@media(max-width:520px){.grid,.cards,.goalgrid{grid-template-columns:1fr}.wrap{margin:10px auto;padding:0 8px}h1{font-size:25px}}
+@page{size:A4 landscape;margin:9mm}
+@media print{
+ body{background:#fff}.wrap{max-width:none;margin:0;padding:0}h1{font-size:22px}.sub{font-size:9px;margin:2px 0 5px}
+ .title{font-size:10px;padding:5px 7px;margin-top:7px}.box{padding:6px}.field label{font-size:7px}
+ input,select{height:24px;font-size:8px}.card,.goalcard,.reality{padding:7px}.big{font-size:14px}.period,.small,.note,.submsg{font-size:7px}
+ .reality .headline{font-size:13px}.reality .message{font-size:9px}.goalcard .gval{font-size:13px}.goalcard .glabel{font-size:7px}
+ .actions{display:none}table{font-size:8px}th,td{padding:4px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>PROJECTION RATE</h1>
+<div class="sub">Adarsh Technical Trading Desk (ATTD) • Realistic Capital → Risk → Costs → Tax → Return</div>
+
+<div class="title">1 | TRADING PLAN</div>
+<div class="box"><div class="grid">
+<div class="field"><label>Trading Capital</label><input id="capital" type="number" value="50000" min="0"></div>
+<div class="field"><label>Leverage / Margin</label><select id="lev"><option>1</option><option>2</option><option>3</option><option selected>4</option><option>5</option><option>6</option><option>8</option><option>10</option></select></div>
+<div class="field"><label>Max Loss / Day</label><input id="loss" type="number" value="1000" min="0"></div>
+<div class="field"><label>Max Trades / Day</label><input id="trades" type="number" value="1" min="1" max="50"></div>
+<div class="field"><label>Risk : Reward</label><input id="rr" type="number" value="5" min=".1" step=".1"></div>
+<div class="field"><label>Win Ratio %</label><input id="win" type="number" value="50" min="0" max="100" step="1"></div>
+<div class="field"><label>Projection Mode</label><select id="mode"><option value="fixed" selected>Fixed Risk</option><option value="compound">Compounding</option></select></div>
+<div class="field"><label>Trading Days / Week</label><input id="week" type="number" value="5" min="1" max="7"></div>
+<div class="field"><label>Trading Days / Month</label><input id="month" type="number" value="22" min="1" max="31"></div>
+<div class="field"><label>Trading Days / Year</label><input id="year" type="number" value="250" min="1" max="366"></div>
+</div></div>
+
+<div class="title">2 | COST & TAX SETTINGS</div>
+<div class="box"><div class="grid">
+<div class="field"><label>Instrument / Charge Model</label>
+<select id="instrument">
+<option value="equity" selected>Intraday Equity — screenshot default</option>
+<option value="futures">F&O Futures — ₹20/order default</option>
+<option value="options">F&O Options — screenshot default</option>
+<option value="custom">Custom / My Broker</option>
+</select></div>
+<div class="field"><label>Trade Value / Trade (₹)</label><input id="tradeValue" type="number" value="200000" min="0"></div>
+<div class="field"><label>Brokerage / Order (₹)</label><input id="brokerage" type="number" value="20" min="0" step=".01"></div>
+<div class="field"><label>Income Tax on Yearly Profit %</label><input id="tax" type="number" value="30" min="0" max="100" step=".1"></div>
+<div class="field"><label>GST %</label><input id="gst" type="number" value="18" min="0" max="100" step=".1"></div>
+<div class="field"><label>SEBI Charge % of Turnover</label><input id="sebi" type="number" value="0.0001" min="0" step=".0001"></div>
+<div class="field"><label>Exchange Transaction %</label><input id="exchange" type="number" value="0.00335" min="0" step=".00001"></div>
+<div class="field"><label>STT % (sell-side)</label><input id="stt" type="number" value="0.025" min="0" step=".001"></div>
+<div class="field"><label>Stamp Duty % (buy-side)</label><input id="stamp" type="number" value="0.003" min="0" step=".001"></div>
+</div>
+<p class="note"><b>Default model is based on the attached ICICI Direct examples:</b> ₹20 brokerage per order, so ₹40 for a buy + sell round trip. Equity defaults use 0.00335% exchange transaction, 0.0001% SEBI, 0.025% STT on sell-side turnover and 0.003% stamp duty on buy-side turnover. Options defaults use 0.03503% exchange transaction and 0.15% STT on sell-side turnover. Futures uses the same ₹20/order brokerage with the charge fields editable.</p>
+</div>
+
+<div class="title">3 | DAILY REALITY ENGINE</div>
+<div class="box"><div class="cards">
+<div class="card"><div class="period">BUYING POWER</div><div class="big" id="bp">₹0</div><div class="small">Capital × Leverage</div></div>
+<div class="card"><div class="period">1R / TRADE</div><div class="big" id="r">₹0</div><div class="small">Max Loss / Day ÷ Trades</div></div>
+<div class="card"><div class="period">GROSS WIN / TRADE</div><div class="big" id="winamt">₹0</div><div class="small">1R × R:R</div></div>
+<div class="card"><div class="period">COST / ROUND TRIP</div><div class="big" id="costTrade">₹0</div><div class="small">Brokerage + exchange + statutory charges + GST</div></div>
+</div>
+<div class="cards" style="margin-top:10px">
+<div class="card"><div class="period">EXPECTED NET / DAY</div><div class="big" id="day">₹0</div><div class="small">After trading costs, before income tax</div></div>
+<div class="card"><div class="period">NET ANNUAL PROFIT</div><div class="big" id="annualNet">₹0</div><div class="small">After trading costs + yearly income tax</div></div>
+<div class="card"><div class="period">NET ANNUAL RETURN</div><div class="big" id="annualReturn">0%</div><div class="small">Net annual profit ÷ starting capital</div></div>
+<div class="card"><div class="period">BREAK-EVEN WIN RATE</div><div class="big" id="be">0%</div><div class="small">Gross R:R only; costs make practical break-even higher</div></div>
+</div>
+<p class="note"><b>Expected Edge:</b> <span id="edge" class="edge">0 R</span> gross per trade. Trading costs are deducted from expected results. Income tax is applied only to positive yearly profit, at the tax rate you enter.</p>
+</div>
+
+<div class="title">4 | REALITY CHECK</div>
+<div class="box"><div class="reality">
+<div class="headline" id="realityHeadline">Your projected return</div>
+<div class="message" id="realityMessage">Enter your plan to see the reality check.</div>
+<div class="submsg" id="realitySub">This is a benchmark-style message, not a promise of returns.</div>
+</div></div>
+
+<div class="title">5 | PROJECTION</div>
+<div class="box"><div class="cards">
+<div class="card"><div class="period">DAILY</div><div class="big" id="pd">₹0</div><div class="small" id="cd">After trading costs</div></div>
+<div class="card"><div class="period">WEEKLY</div><div class="big" id="pw">₹0</div><div class="small" id="cw">After trading costs</div></div>
+<div class="card"><div class="period">MONTHLY</div><div class="big" id="pm">₹0</div><div class="small" id="cm">After trading costs</div></div>
+<div class="card"><div class="period">YEARLY</div><div class="big" id="py">₹0</div><div class="small" id="cy">After costs + income tax</div></div>
+</div>
+<p class="note">Fixed Risk keeps the original daily loss amount. Compounding applies the same risk percentage to current capital. The model assumes the entered win rate, R:R and trading frequency continue consistently; real trading has slippage, missed trades, changing costs, drawdowns, losing streaks and execution limits.</p>
+</div>
+
+<div class="title">6 | GOAL → CAPITAL REQUIRED</div>
+<div class="box"><div class="grid">
+<div class="field"><label>Target Annual Net Profit (₹)</label><input id="goal" type="number" value="600000" min="0"></div>
+</div>
+<div class="goalgrid" style="margin-top:10px">
+<div class="goalcard"><div class="glabel">CURRENT NET ANNUAL RETURN</div><div class="gval" id="gReturn">0%</div></div>
+<div class="goalcard"><div class="glabel">ESTIMATED CAPITAL REQUIRED</div><div class="gval" id="requiredCapital">₹0</div></div>
+<div class="goalcard"><div class="glabel">MONTHLY NET PROFIT TARGET</div><div class="gval" id="monthlyGoal">₹0</div></div>
+</div>
+<p class="note" id="goalNote">The required-capital figure is a planning estimate: it assumes the current net annual return can be maintained as capital scales. If the current return is zero or negative, no meaningful capital estimate is shown.</p>
+</div>
+
+<div class="actions">
+<button class="primary" onclick="print()">Print / Save PDF</button>
+<button class="secondary" onclick="save()">Save Plan</button>
+<button class="secondary" onclick="load()">Load Plan</button>
+<button class="secondary" onclick="resetAll()">Reset</button>
+</div>
+</div>
+
+<script>
+const $=id=>document.getElementById(id);
+const n=id=>Number($(id).value)||0;
+const money=x=>"₹"+Math.round(Math.max(0,x)).toLocaleString("en-IN");
+function pct(x){return (x*100).toFixed(1)+"%";}
+function setInstrumentDefaults(){
+  const type=$("instrument").value;
+  if(type==="equity"){
+    $("brokerage").value=20;$("exchange").value=0.00335;$("sebi").value=0.0001;$("gst").value=18;$("stt").value=0.025;$("stamp").value=0.003;
+  }else if(type==="options"){
+    $("brokerage").value=20;$("exchange").value=0.03503;$("sebi").value=0.0001;$("gst").value=18;$("stt").value=0.15;$("stamp").value=0.003;
+  }else if(type==="futures"){
+    $("brokerage").value=20;$("exchange").value=0.002;$("sebi").value=0.0001;$("gst").value=18;$("stt").value=0.02;$("stamp").value=0.002;
+  }
+}
+function roundTripCost(tv){
+  let buy=tv,sell=tv,turn=buy+sell;
+  let brokerage=n("brokerage")*2;
+  let exchange=turn*n("exchange")/100;
+  let sebi=turn*n("sebi")/100;
+  let stt=sell*n("stt")/100;
+  let stamp=buy*n("stamp")/100;
+  let gst=(brokerage+exchange+sebi)*n("gst")/100;
+  return {total:brokerage+exchange+sebi+stt+stamp+gst,brokerage,exchange,sebi,stt,stamp,gst};
+}
+function expectedDailyForCapital(c){
+  let trades=Math.max(1,n("trades")),rr=Math.max(.1,n("rr")),win=Math.min(100,Math.max(0,n("win")))/100;
+  let loss=Math.max(0,n("loss"));
+  let r=loss/trades;
+  let tradeValue=n("tradeValue");
+  if(tradeValue<=0) tradeValue=c*Math.max(1,n("lev"));
+  let cost=roundTripCost(tradeValue).total;
+  let edgeR=win*rr-(1-win);
+  let gross=r*trades*edgeR;
+  return {gross, cost:cost*trades, net:gross-cost*trades, edgeR, r, costTrade:cost};
+}
+function calc(){
+  let c=n("capital"),l=n("lev"),trades=Math.max(1,n("trades")),rr=Math.max(.1,n("rr"));
+  let win=Math.min(100,Math.max(0,n("win")))/100;
+  let week=Math.max(1,n("week")),month=Math.max(1,n("month")),year=Math.max(1,n("year"));
+  let d=expectedDailyForCapital(c);
+  let taxRate=Math.min(100,Math.max(0,n("tax")))/100;
+  let mode=$("mode").value;
+
+  $("bp").textContent=money(c*l);
+  $("r").textContent=money(d.r);
+  $("winamt").textContent=money(d.r*rr);
+  $("costTrade").textContent=money(d.costTrade);
+  $("day").textContent=money(d.net);
+  $("edge").textContent=(d.edgeR>=0?"+":"")+d.edgeR.toFixed(2)+" R";
+  $("be").textContent=(100/(rr+1)).toFixed(1)+"%";
+
+  let annualGross,annualCosts,annualPreTax,annualTax,annualNet,endCapital;
+  if(mode==="fixed"){
+    annualGross=d.gross*year;
+    annualCosts=d.cost*year;
+    annualPreTax=annualGross-annualCosts;
+    annualTax=Math.max(0,annualPreTax)*taxRate;
+    annualNet=annualPreTax-annualTax;
+    endCapital=c+annualNet;
+  }else{
+    let riskPct=c>0?n("loss")/c:0;
+    let dailyGrowth=riskPct*d.edgeR;
+    let costRate=c>0?d.cost/c:0;
+    // Costs are deducted from the daily expected return. As capital changes, the trade-value
+    // cost is treated as a fixed rupee cost per day unless the user changes Trade Value.
+    let netDailyGrowth=dailyGrowth-costRate;
+    let endPreTax=c*Math.pow(1+netDailyGrowth,year);
+    annualPreTax=endPreTax-c;
+    annualTax=Math.max(0,annualPreTax)*taxRate;
+    annualNet=annualPreTax-annualTax;
+    endCapital=c+annualNet;
+    annualGross=(c*Math.pow(1+dailyGrowth,year))-c;
+    annualCosts=Math.max(0,annualGross-annualPreTax);
+  }
+  $("annualNet").textContent=money(annualNet);
+  $("annualReturn").textContent=(c>0?(annualNet/c*100):0).toFixed(1)+"%";
+
+  let periods=[["pd","cd",1],["pw","cw",week],["pm","cm",month]];
+  periods.forEach(([pid,cid,days])=>{
+    if(mode==="fixed"){
+      let prof=d.net*days;
+      $(pid).textContent=money(prof);
+      $(cid).textContent="After trading costs • Pre-tax";
+    }else{
+      let riskPct=c>0?n("loss")/c:0;
+      let dailyGrowth=riskPct*d.edgeR-(d.cost/c||0);
+      let end=c*Math.pow(1+dailyGrowth,days);
+      $(pid).textContent=money(end-c);
+      $(cid).textContent="After trading costs • Pre-tax";
+    }
+  });
+  $("py").textContent=money(annualNet);
+  $("cy").textContent="After trading costs + "+(taxRate*100).toFixed(1)+"% income tax";
+
+  realityCheck(annualNet,c,annualNet/c||0);
+  $("gReturn").textContent=(c>0?(annualNet/c*100):0).toFixed(1)+"%";
+  let goal=n("goal");
+  let req=requiredCapitalForGoal(goal);
+  $("requiredCapital").textContent=req>0?money(req):"—";
+  $("monthlyGoal").textContent=money(goal/12);
+  $("goalNote").textContent=req>0
+    ?"This is an estimate using the same assumptions above. It is not a guarantee and should be treated as a planning number."
+    :"Enter a positive Target Annual Net Profit to estimate the starting capital required.";
+}
+function realityCheck(net,c,ret){
+  const h=$("realityHeadline"),m=$("realityMessage"),s=$("realitySub");
+  let r=ret*100;
+  h.textContent="Projected net annual return: "+r.toFixed(1)+"%";
+  if(r>39){
+    m.textContent="🚀 Dreaming bigger than 39%? That is an exceptionally ambitious target — even the often-cited ~39% net annualized Medallion benchmark is famous for being extraordinarily hard to sustain.";
+    s.textContent="Reality check: the model is showing a mathematical projection, not a normal-market expectation. Ask: how much capital and how much risk am I taking to chase this?";
+  }else if(r>18){
+    m.textContent="😎 You want to beat SIPs / mutual-fund style long-term returns — with a trading plan that must survive drawdowns and bad months.";
+    s.textContent="A high annual target needs consistent edge, controlled risk and enough capital. The Goal → Capital section shows the scale implied by your assumptions.";
+  }else if(r>12){
+    m.textContent="📈 You're aiming to beat long-term bond-style returns. Possible as a target, but the path can be much bumpier than a fixed-income return.";
+    s.textContent="Keep the distinction clear: projected return is not guaranteed return.";
+  }else if(r>6){
+    m.textContent="🏦 You're aiming above typical FD-style return territory. The trade-off is that trading returns are variable and can include losing periods.";
+    s.textContent="Capital preservation and realistic drawdown expectations matter as much as the headline return.";
+  }else if(r>0){
+    m.textContent="🙂 A relatively modest return target — less fireworks, more focus on consistency.";
+    s.textContent="Even modest percentages can become meaningful with sufficient capital and disciplined execution.";
+  }else{
+    m.textContent="🧯 The current assumptions do not produce a positive annual return after trading costs and tax.";
+    s.textContent="Before increasing risk, check win rate, R:R, trade frequency and the cost of each round trip.";
+  }
+}
+function projectedNetForCapital(c){
+  let old=n("capital");
+  $("capital").value=c;
+  // Use same formulas but avoid mutating by deriving directly.
+  let d=expectedDailyForCapital(c),year=Math.max(1,n("year")),taxRate=Math.min(100,Math.max(0,n("tax")))/100;
+  let mode=$("mode").value,net;
+  if(mode==="fixed"){
+    let pre=d.net*year; net=pre-Math.max(0,pre)*taxRate;
+  }else{
+    let riskPct=c>0?n("loss")/c:0;
+    let dailyGrowth=riskPct*d.edgeR-(d.cost/c||0);
+    let pre=c*Math.pow(1+dailyGrowth,year)-c;
+    net=pre-Math.max(0,pre)*taxRate;
+  }
+  $("capital").value=old;
+  return net;
+}
+function requiredCapitalForGoal(goal){
+  if(goal<=0)return 0;
+  let c=n("capital");
+  let d=expectedDailyForCapital(c),year=Math.max(1,n("year"));
+  let taxRate=Math.min(100,Math.max(0,n("tax")))/100;
+  let annualNet;
+  if($("mode").value==="fixed"){
+    let pre=d.net*year;
+    annualNet=pre-Math.max(0,pre)*taxRate;
+  }else{
+    let riskPct=c>0?n("loss")/c:0;
+    let dailyGrowth=riskPct*d.edgeR-(d.cost/c||0);
+    let pre=c*Math.pow(1+dailyGrowth,year)-c;
+    annualNet=pre-Math.max(0,pre)*taxRate;
+  }
+  let netReturn=c>0?annualNet/c:0;
+  // Planning estimate: required capital if the current net annual return can be
+  // maintained at the larger capital level.
+  return netReturn>0?goal/netReturn:0;
+}
+["capital","lev","loss","trades","rr","win","mode","week","month","year","tradeValue","brokerage","tax","gst","sebi","exchange","stt","stamp","goal"].forEach(id=>$(id).addEventListener("input",calc));
+$("mode").addEventListener("change",calc);
+$("instrument").addEventListener("change",()=>{setInstrumentDefaults();calc();});
+function save(){
+ let d={};
+ ["capital","lev","loss","trades","rr","win","mode","week","month","year","instrument","tradeValue","brokerage","tax","gst","sebi","exchange","stt","stamp","goal"].forEach(id=>d[id]=$(id).value);
+ localStorage.setItem("ATTD_Projection_Rate_V3",JSON.stringify(d)); alert("Plan saved.");
+}
+function load(){
+ let d=JSON.parse(localStorage.getItem("ATTD_Projection_Rate_V3")||"null");
+ if(!d)return alert("No saved plan.");
+ Object.keys(d).forEach(id=>{if($(id))$(id).value=d[id]});
+ calc();
+}
+function resetAll(){
+ $("capital").value=50000;$("lev").value=4;$("loss").value=1000;$("trades").value=1;
+ $("rr").value=5;$("win").value=50;$("mode").value="fixed";
+ $("week").value=5;$("month").value=22;$("year").value=250;
+ $("instrument").value="equity";$("tradeValue").value=200000;$("tax").value=30;
+ $("gst").value=18;$("sebi").value=0.0001;$("exchange").value=0.00335;$("stt").value=0.025;$("stamp").value=0.003;
+ $("brokerage").value=20;$("goal").value=600000;calc();
+}
+calc();
+</script>
+</body>
+</html>
